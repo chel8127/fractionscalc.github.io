@@ -7,160 +7,348 @@
 <title>Fraction Calculator</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg:#0d0f14;--surface:#13161e;--surface2:#1a1f2b;--surface3:#222838;
-    --border:#2a3045;--border2:#3a4560;
-    --accent:#6c8fff;--accent2:#a78bfa;
-    --text:#e8eaf0;--text2:#9aa0b8;--text3:#5a6280;
-    --success:#4ade80;--err:#f87171;
-    --glow:rgba(108,143,255,0.18);
-    --radius:14px;--radius-sm:8px;
-  }
-  .theme-violet{--accent:#a78bfa;--accent2:#e879f9;--glow:rgba(167,139,250,0.18);}
-  .theme-emerald{--accent:#34d399;--accent2:#6ee7b7;--glow:rgba(52,211,153,0.18);--bg:#0a0f0d;--surface:#0f1610;--surface2:#162018;--surface3:#1e2d22;--border:#243628;--border2:#2e4a34;}
-  .theme-amber{--accent:#fbbf24;--accent2:#f97316;--glow:rgba(251,191,36,0.15);--bg:#0f0e09;--surface:#18160a;--surface2:#231f0e;--surface3:#2e2912;--border:#3d3614;--border2:#524817;}
-  .theme-rose{--accent:#fb7185;--accent2:#f43f5e;--glow:rgba(251,113,133,0.15);--bg:#100a0d;--surface:#180f13;--surface2:#22141a;--surface3:#2d1b22;--border:#3d2030;--border2:#52293f;}
-  .theme-cyan{--accent:#22d3ee;--accent2:#67e8f9;--glow:rgba(34,211,238,0.15);--bg:#060f12;--surface:#0b1820;--surface2:#102030;--surface3:#162b3e;--border:#1c3448;--border2:#244460;}
+/* ── VARIABLES ──────────────────────────────────────────────────────────── */
+:root{
+  --bg:#08090f;--surface:#10121a;--surface2:#161b27;--surface3:#1e2535;
+  --border:#252e44;--border2:#313d58;
+  --accent:#6c8fff;--accent2:#a78bfa;--accent3:#38bdf8;
+  --text:#e8eaf2;--text2:#96a0bc;--text3:#50607a;
+  --success:#4ade80;--warn:#fbbf24;--err:#f87171;
+  --glow:rgba(108,143,255,0.22);--glow2:rgba(167,139,250,0.14);
+  --radius:16px;--radius-sm:9px;
+}
+.th-violet{--accent:#a78bfa;--accent2:#e879f9;--accent3:#c084fc;--glow:rgba(167,139,250,0.22);--glow2:rgba(232,121,249,0.12);}
+.th-emerald{--accent:#34d399;--accent2:#6ee7b7;--accent3:#a7f3d0;--glow:rgba(52,211,153,0.2);--glow2:rgba(110,231,183,0.1);--bg:#07100d;--surface:#0d1812;--surface2:#131f18;--surface3:#1a2c20;--border:#223429;--border2:#2c4535;}
+.th-amber{--accent:#fbbf24;--accent2:#fb923c;--accent3:#fde68a;--glow:rgba(251,191,36,0.18);--glow2:rgba(251,146,60,0.1);--bg:#0f0d07;--surface:#18140a;--surface2:#211c0e;--surface3:#2c2512;--border:#3a3012;--border2:#4e4218;}
+.th-rose{--accent:#f472b6;--accent2:#fb7185;--accent3:#fda4af;--glow:rgba(244,114,182,0.18);--glow2:rgba(251,113,133,0.1);--bg:#0f080d;--surface:#180c14;--surface2:#22121c;--surface3:#2e1826;--border:#3d1e30;--border2:#52293e;}
+.th-cyan{--accent:#22d3ee;--accent2:#67e8f9;--accent3:#a5f3fc;--glow:rgba(34,211,238,0.18);--glow2:rgba(103,232,249,0.1);--bg:#050f13;--surface:#091620;--surface2:#0d1f2e;--surface3:#132a3e;--border:#1a3448;--border2:#224560;}
 
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(–bg);color:var(–text);font-family:‘Syne’,sans-serif;min-height:100vh;overflow-x:hidden;transition:background .4s,color .4s;}
-body::before{content:’’;position:fixed;inset:0;background-image:linear-gradient(var(–border) 1px,transparent 1px),linear-gradient(90deg,var(–border) 1px,transparent 1px);background-size:60px 60px;opacity:.22;pointer-events:none;z-index:0;}
-body::after{content:’’;position:fixed;top:-40%;left:50%;transform:translateX(-50%);width:900px;height:600px;background:radial-gradient(ellipse,var(–glow) 0%,transparent 70%);pointer-events:none;z-index:0;transition:background .4s;}
+body{background:var(–bg);color:var(–text);font-family:‘Syne’,sans-serif;min-height:100vh;overflow-x:hidden;transition:background .5s,color .4s;}
 
-.container{max-width:980px;margin:0 auto;padding:28px 20px 80px;position:relative;z-index:1;}
+/* ── ANIMATED BACKGROUND ─────────────────────────────────────────────────── */
+#bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
 
-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;flex-wrap:wrap;gap:14px;}
+.aurora{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.aurora-blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:.18;animation:auroraFloat 18s ease-in-out infinite;}
+.aurora-blob:nth-child(1){width:700px;height:500px;background:radial-gradient(var(–accent),transparent 70%);top:-15%;left:-10%;animation-duration:20s;}
+.aurora-blob:nth-child(2){width:600px;height:400px;background:radial-gradient(var(–accent2),transparent 70%);top:30%;right:-15%;animation-duration:25s;animation-delay:-8s;}
+.aurora-blob:nth-child(3){width:500px;height:350px;background:radial-gradient(var(–accent3),transparent 70%);bottom:-10%;left:30%;animation-duration:22s;animation-delay:-14s;}
+@keyframes auroraFloat{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(40px,-30px) scale(1.05);}66%{transform:translate(-30px,20px) scale(.95);};}
+
+.grid-overlay{position:fixed;inset:0;z-index:0;pointer-events:none;
+background-image:linear-gradient(var(–border) 1px,transparent 1px),linear-gradient(90deg,var(–border) 1px,transparent 1px);
+background-size:56px 56px;opacity:.18;}
+
+/* Floating math symbols */
+.floaters{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.floater{position:absolute;font-family:‘DM Serif Display’,serif;color:var(–accent);opacity:0;animation:floatUp linear infinite;}
+@keyframes floatUp{0%{opacity:0;transform:translateY(100vh) rotate(0deg);}10%{opacity:.12;}90%{opacity:.06;}100%{opacity:0;transform:translateY(-10vh) rotate(360deg);}}
+
+/* ── LAYOUT ───────────────────────────────────────────────────────────────── */
+.container{max-width:1020px;margin:0 auto;padding:28px 20px 100px;position:relative;z-index:1;}
+
+/* ── HEADER ───────────────────────────────────────────────────────────────── */
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:14px;
+animation:headerIn .7s cubic-bezier(.2,1,.3,1) both;}
+@keyframes headerIn{from{opacity:0;transform:translateY(-20px);}to{opacity:1;transform:translateY(0);}}
+
 .logo{display:flex;flex-direction:column;line-height:1;}
-.logo-title{font-family:‘DM Serif Display’,serif;font-size:2rem;letter-spacing:-.02em;background:linear-gradient(135deg,var(–text) 40%,var(–accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.logo-sub{font-family:‘DM Mono’,monospace;font-size:.68rem;color:var(–text3);letter-spacing:.18em;text-transform:uppercase;margin-top:4px;}
-.header-right{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.logo-title{font-family:‘DM Serif Display’,serif;font-size:2.1rem;letter-spacing:-.03em;
+background:linear-gradient(135deg,var(–text) 30%,var(–accent) 65%,var(–accent2));
+-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+filter:drop-shadow(0 0 24px var(–glow));}
+.logo-sub{font-family:‘DM Mono’,monospace;font-size:.65rem;color:var(–text3);letter-spacing:.2em;text-transform:uppercase;margin-top:5px;}
 
+.header-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
 .lang-row{display:flex;gap:4px;}
-.lang-btn{cursor:pointer;border:1px solid var(–border);background:var(–surface2);color:var(–text3);font-family:‘DM Mono’,monospace;font-size:.7rem;letter-spacing:.1em;padding:5px 10px;border-radius:6px;transition:all .18s;text-transform:uppercase;}
+.lang-btn{cursor:pointer;border:1px solid var(–border);background:var(–surface2);color:var(–text3);
+font-family:‘DM Mono’,monospace;font-size:.68rem;letter-spacing:.1em;padding:5px 10px;border-radius:7px;
+transition:all .2s;text-transform:uppercase;}
 .lang-btn:hover{border-color:var(–accent);color:var(–accent);}
 .lang-btn.active{background:var(–accent);color:var(–bg);border-color:var(–accent);font-weight:700;}
 
-.theme-row{display:flex;gap:7px;align-items:center;}
-.theme-label{font-size:.68rem;color:var(–text3);font-family:‘DM Mono’,monospace;letter-spacing:.1em;}
-.theme-dot{width:21px;height:21px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:transform .2s,border-color .2s;}
-.theme-dot:hover{transform:scale(1.2);}
-.theme-dot.active{border-color:var(–text);}
-.theme-dot[data-theme=“default”]{background:linear-gradient(135deg,#6c8fff,#a78bfa);}
-.theme-dot[data-theme=“violet”]{background:linear-gradient(135deg,#a78bfa,#e879f9);}
-.theme-dot[data-theme=“emerald”]{background:linear-gradient(135deg,#34d399,#6ee7b7);}
-.theme-dot[data-theme=“amber”]{background:linear-gradient(135deg,#fbbf24,#f97316);}
-.theme-dot[data-theme=“rose”]{background:linear-gradient(135deg,#fb7185,#f43f5e);}
-.theme-dot[data-theme=“cyan”]{background:linear-gradient(135deg,#22d3ee,#67e8f9);}
+.theme-row{display:flex;gap:6px;align-items:center;}
+.theme-label{font-size:.65rem;color:var(–text3);font-family:‘DM Mono’,monospace;letter-spacing:.1em;}
+.theme-dot{width:20px;height:20px;border-radius:50%;cursor:pointer;border:2.5px solid transparent;
+transition:transform .25s,border-color .25s,box-shadow .25s;}
+.theme-dot:hover{transform:scale(1.25);box-shadow:0 0 8px var(–glow);}
+.theme-dot.active{border-color:var(–text);box-shadow:0 0 10px var(–glow);}
+.theme-dot[data-t=“default”]{background:linear-gradient(135deg,#6c8fff,#a78bfa);}
+.theme-dot[data-t=“violet”]{background:linear-gradient(135deg,#a78bfa,#e879f9);}
+.theme-dot[data-t=“emerald”]{background:linear-gradient(135deg,#34d399,#6ee7b7);}
+.theme-dot[data-t=“amber”]{background:linear-gradient(135deg,#fbbf24,#f97316);}
+.theme-dot[data-t=“rose”]{background:linear-gradient(135deg,#f472b6,#fb7185);}
+.theme-dot[data-t=“cyan”]{background:linear-gradient(135deg,#22d3ee,#67e8f9);}
 
-.card{background:var(–surface);border:1px solid var(–border);border-radius:var(–radius);overflow:hidden;margin-bottom:18px;transition:background .4s,border-color .4s;}
-.input-section{padding:24px 26px;border-bottom:1px solid var(–border);}
-.section-title{font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(–text3);font-family:‘DM Mono’,monospace;margin-bottom:14px;}
+/* ── CARD ─────────────────────────────────────────────────────────────────── */
+.card{background:var(–surface);border:1px solid var(–border);border-radius:var(–radius);
+overflow:hidden;margin-bottom:16px;transition:background .5s,border-color .4s;
+animation:cardIn .6s cubic-bezier(.2,1,.3,1) both;
+box-shadow:0 4px 40px rgba(0,0,0,.4),0 0 0 0 var(–glow);position:relative;}
+.card:nth-child(1){animation-delay:.05s;}
+.card:nth-child(2){animation-delay:.1s;}
+@keyframes cardIn{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+.card::before{content:’’;position:absolute;inset:0;border-radius:var(–radius);
+background:linear-gradient(135deg,var(–glow) 0%,transparent 50%,var(–glow2) 100%);
+pointer-events:none;opacity:.5;}
 
-.expression-display{background:var(–bg);border:1px solid var(–border2);border-radius:var(–radius);padding:18px 22px;min-height:76px;margin-bottom:16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-family:‘DM Mono’,monospace;position:relative;overflow:hidden;}
-.expression-display::before{content:’’;position:absolute;inset:0;background:linear-gradient(90deg,var(–glow) 0%,transparent 60%);pointer-events:none;}
-@keyframes fadeSlide{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
-.expr-token{display:inline-flex;align-items:center;gap:4px;animation:fadeSlide .18s ease;}
-.token-whole,.token-decimal{font-size:1.9rem;color:var(–text);line-height:1;}
+/* ── EXPRESSION DISPLAY ────────────────────────────────────────────────────── */
+.input-section{padding:22px 24px;border-bottom:1px solid var(–border);}
+.section-title{font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(–text3);
+font-family:‘DM Mono’,monospace;margin-bottom:12px;}
+
+.expr-wrap{position:relative;margin-bottom:14px;}
+.expression-display{
+background:linear-gradient(135deg,rgba(8,9,15,.9),rgba(16,18,26,.8));
+border:1px solid var(–border2);border-radius:var(–radius);
+padding:16px 20px;min-height:80px;
+display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+font-family:‘DM Mono’,monospace;position:relative;overflow:hidden;
+box-shadow:inset 0 0 30px rgba(0,0,0,.3),0 0 0 0 var(–glow);
+transition:box-shadow .3s;}
+.expression-display.has-content{box-shadow:inset 0 0 30px rgba(0,0,0,.3),0 0 20px var(–glow);}
+.expression-display::before{content:’’;position:absolute;inset:0;
+background:linear-gradient(90deg,var(–glow) 0%,transparent 50%);pointer-events:none;}
+.expr-cursor{display:inline-block;width:2px;height:2rem;background:var(–accent);
+border-radius:2px;margin-left:2px;animation:blink .9s ease-in-out infinite;vertical-align:middle;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+
+/* Token animations */
+@keyframes tokenIn{from{opacity:0;transform:scale(.7) translateY(-8px);}to{opacity:1;transform:scale(1) translateY(0);}}
+@keyframes tokenPop{0%{transform:scale(1);}50%{transform:scale(1.15);}100%{transform:scale(1);}}
+.expr-token{display:inline-flex;align-items:center;gap:3px;animation:tokenIn .2s cubic-bezier(.2,1,.3,1);}
+
+.token-whole,.token-decimal,.token-int{font-size:1.85rem;color:var(–text);line-height:1;}
 .token-frac{display:inline-flex;flex-direction:column;align-items:center;gap:1px;vertical-align:middle;}
-.frac-num,.frac-den{font-size:.95rem;color:var(–text);line-height:1.1;}
-.frac-line{width:100%;height:1.5px;background:var(–accent);border-radius:2px;min-width:20px;}
-.token-mixed{display:inline-flex;align-items:center;gap:5px;}
-.token-op{font-size:1.5rem;color:var(–accent);font-weight:700;padding:0 3px;line-height:1;}
-.expr-placeholder{color:var(–text3);font-size:.82rem;font-family:‘DM Mono’,monospace;}
+.frac-num,.frac-den{font-size:.9rem;color:var(–text);line-height:1.1;}
+.frac-line{width:100%;height:1.5px;background:linear-gradient(90deg,var(–accent),var(–accent2));border-radius:2px;min-width:20px;}
+.token-mixed{display:inline-flex;align-items:center;gap:4px;}
+.token-op{font-size:1.5rem;color:var(–accent);font-weight:700;padding:0 4px;line-height:1;
+text-shadow:0 0 12px var(–glow);}
+.token-bracket{font-family:‘DM Serif Display’,serif;font-size:2.4rem;color:var(–accent2);
+line-height:1;font-style:italic;text-shadow:0 0 12px var(–glow2);padding:0 1px;}
+.token-func{font-size:1rem;color:var(–accent3);font-family:‘DM Mono’,monospace;font-weight:500;
+background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.25);
+border-radius:5px;padding:2px 7px;margin:0 2px;}
+.expr-placeholder{color:var(–text3);font-size:.8rem;font-family:‘DM Mono’,monospace;}
 
-.input-tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
-.tab-btn{cursor:pointer;border:1px solid var(–border);background:var(–surface2);color:var(–text3);font-family:‘Syne’,sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.05em;padding:7px 14px;border-radius:var(–radius-sm);transition:all .18s;}
-.tab-btn:hover{border-color:var(–accent2);color:var(–accent2);}
-.tab-btn.active{background:var(–surface3);border-color:var(–accent);color:var(–accent);}
+/* ── TABS ─────────────────────────────────────────────────────────────────── */
+.input-tabs{display:flex;gap:5px;margin-bottom:12px;flex-wrap:wrap;}
+.tab-btn{cursor:pointer;border:1px solid var(–border);background:var(–surface2);color:var(–text3);
+font-family:‘Syne’,sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.05em;
+padding:6px 13px;border-radius:var(–radius-sm);transition:all .2s;}
+.tab-btn:hover{border-color:var(–accent2);color:var(–accent2);transform:translateY(-1px);}
+.tab-btn.active{background:linear-gradient(135deg,var(–accent),var(–accent2));
+color:var(–bg);border-color:transparent;box-shadow:0 4px 14px var(–glow);}
 
-.keypad-area{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-.keypad-panel{background:var(–surface2);border:1px solid var(–border);border-radius:var(–radius);padding:14px;transition:background .4s;}
-.panel-title{font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(–text3);font-family:‘DM Mono’,monospace;margin-bottom:10px;}
+/* ── KEYPAD ───────────────────────────────────────────────────────────────── */
+.keypad-area{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.keypad-panel{background:var(–surface2);border:1px solid var(–border);border-radius:var(–radius);
+padding:13px;transition:background .4s;}
+.panel-title{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(–text3);
+font-family:‘DM Mono’,monospace;margin-bottom:9px;}
 
 .tab-pane{display:none;}
 .tab-pane.active{display:block;}
-.entry-builder{display:flex;flex-direction:column;gap:9px;}
-.entry-inputs{display:grid;gap:7px;}
+.entry-builder{display:flex;flex-direction:column;gap:8px;}
+.entry-inputs{display:grid;gap:6px;}
 .cols-1{grid-template-columns:1fr;}
-.cols-3{grid-template-columns:1fr 1fr 1fr;}
+.cols-3{grid-template-columns:1fr auto 1fr;}
 .entry-field-wrap{display:flex;flex-direction:column;gap:3px;}
-.field-label{font-size:.58rem;color:var(–text3);font-family:‘DM Mono’,monospace;letter-spacing:.1em;text-transform:uppercase;}
-.entry-field{background:var(–surface3);border:1px solid var(–border);border-radius:var(–radius-sm);color:var(–text);font-family:‘DM Mono’,monospace;font-size:1.05rem;padding:8px 10px;text-align:center;width:100%;outline:none;transition:border-color .2s,box-shadow .2s;}
-.entry-field:focus{border-color:var(–accent);box-shadow:0 0 0 3px var(–glow);}
+.field-label{font-size:.56rem;color:var(–text3);font-family:‘DM Mono’,monospace;letter-spacing:.1em;text-transform:uppercase;}
+.entry-field{background:var(–surface3);border:1px solid var(–border);border-radius:var(–radius-sm);
+color:var(–text);font-family:‘DM Mono’,monospace;font-size:1.05rem;padding:8px 10px;
+text-align:center;width:100%;outline:none;transition:border-color .2s,box-shadow .2s,transform .15s;}
+.entry-field:focus{border-color:var(–accent);box-shadow:0 0 0 3px var(–glow);transform:scale(1.02);}
 .entry-field::placeholder{color:var(–text3);}
-.frac-divider{display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;font-size:1.5rem;color:var(–accent);font-family:‘DM Serif Display’,serif;}
+.frac-divider{display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;
+font-size:1.5rem;color:var(–accent);font-family:‘DM Serif Display’,serif;}
+.entry-row{display:flex;gap:6px;flex-wrap:wrap;}
 
-.btn{cursor:pointer;border:none;border-radius:var(–radius-sm);font-family:‘Syne’,sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.05em;transition:all .18s;display:flex;align-items:center;justify-content:center;gap:5px;}
-.btn-add{background:var(–surface3);color:var(–text);padding:9px 12px;border:1px solid var(–border2);flex:1;}
-.btn-add:hover{background:var(–border2);border-color:var(–accent);color:var(–accent);}
-.btn-sm{padding:6px 10px;font-size:.72rem;background:var(–surface3);color:var(–text2);border:1px solid var(–border);border-radius:var(–radius-sm);}
-.btn-sm:hover{border-color:var(–accent2);color:var(–accent2);}
+/* BUTTONS */
+.btn{cursor:pointer;border:none;border-radius:var(–radius-sm);font-family:‘Syne’,sans-serif;
+font-weight:700;font-size:.78rem;letter-spacing:.05em;transition:all .18s;
+display:flex;align-items:center;justify-content:center;gap:4px;position:relative;overflow:hidden;}
+.btn::after{content:’’;position:absolute;inset:0;background:white;opacity:0;transition:opacity .15s;border-radius:inherit;}
+.btn:active::after{opacity:.07;}
+.btn-add{background:var(–surface3);color:var(–text);padding:8px 11px;border:1px solid var(–border2);flex:1;}
+.btn-add:hover{border-color:var(–accent);color:var(–accent);transform:translateY(-1px);box-shadow:0 4px 12px var(–glow);}
+.btn-sm{padding:6px 9px;font-size:.7rem;background:var(–surface3);color:var(–text2);border:1px solid var(–border);border-radius:var(–radius-sm);}
+.btn-sm:hover{border-color:var(–accent2);color:var(–accent2);transform:translateY(-1px);}
 .btn-sm.danger:hover{border-color:var(–err);color:var(–err);}
-.entry-row{display:flex;gap:7px;flex-wrap:wrap;}
 
-.ops-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:9px;}
-.btn-op{padding:10px 6px;font-size:1.25rem;background:var(–surface3);color:var(–accent);border:1px solid var(–border);border-radius:var(–radius-sm);cursor:pointer;transition:all .18s;font-family:‘Syne’,sans-serif;font-weight:700;}
-.btn-op:hover{background:var(–glow);border-color:var(–accent);transform:scale(1.06);}
-.btn-op.active-op{background:var(–accent);color:var(–bg);border-color:var(–accent);}
-.control-row{display:flex;gap:7px;}
-.btn-primary{flex:1;background:var(–accent);color:var(–bg);padding:11px 14px;font-size:.83rem;border-radius:var(–radius-sm);box-shadow:0 4px 18px var(–glow);cursor:pointer;border:none;font-family:‘Syne’,sans-serif;font-weight:700;transition:all .18s;}
-.btn-primary:hover{opacity:.88;transform:translateY(-1px);box-shadow:0 6px 26px var(–glow);}
-.btn-secondary{background:var(–surface3);color:var(–text2);padding:11px 13px;border:1px solid var(–border);cursor:pointer;font-family:‘Syne’,sans-serif;font-weight:700;font-size:.8rem;border-radius:var(–radius-sm);transition:all .18s;}
-.btn-secondary:hover{border-color:var(–err);color:var(–err);}
+/* ── OPERATOR GRID ─────────────────────────────────────────────────────────── */
+.ops-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px;}
+.btn-op{padding:9px 4px;font-size:1.2rem;background:var(–surface3);color:var(–accent);
+border:1px solid var(–border);border-radius:var(–radius-sm);cursor:pointer;
+transition:all .18s;font-family:‘Syne’,sans-serif;font-weight:700;}
+.btn-op:hover{background:var(–glow);border-color:var(–accent);transform:scale(1.08);
+box-shadow:0 4px 14px var(–glow);}
+.btn-op.active-op{background:linear-gradient(135deg,var(–accent),var(–accent2));
+color:var(–bg);border-color:transparent;box-shadow:0 4px 16px var(–glow);transform:scale(1.05);}
 
-.result-section{padding:24px 26px;}
-.result-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;}
-.big-result{display:flex;align-items:center;justify-content:center;gap:18px;padding:22px;background:var(–bg);border:1px solid var(–border2);border-radius:var(–radius);margin-bottom:18px;flex-wrap:wrap;}
-.big-frac{display:flex;flex-direction:column;align-items:center;gap:3px;}
-.big-frac-num,.big-frac-den{font-family:‘DM Serif Display’,serif;font-size:2.6rem;color:var(–text);line-height:1;}
-.big-frac-line{width:100%;height:3px;background:linear-gradient(90deg,var(–accent),var(–accent2));border-radius:3px;min-width:55px;}
-.big-whole{font-family:‘DM Serif Display’,serif;font-size:2.8rem;color:var(–text);line-height:1;}
+/* Extra function buttons */
+.extra-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px;}
+.btn-extra{padding:7px 4px;font-size:.75rem;background:rgba(56,189,248,.07);color:var(–accent3);
+border:1px solid rgba(56,189,248,.2);border-radius:var(–radius-sm);cursor:pointer;
+transition:all .18s;font-family:‘DM Mono’,monospace;font-weight:500;}
+.btn-extra:hover{background:rgba(56,189,248,.15);border-color:var(–accent3);transform:scale(1.06);
+box-shadow:0 3px 10px rgba(56,189,248,.2);}
+.btn-extra.active-bracket{background:rgba(167,139,250,.2);border-color:var(–accent2);color:var(–accent2);}
+
+.control-row{display:flex;gap:6px;}
+.btn-primary{flex:1;background:linear-gradient(135deg,var(–accent),var(–accent2));
+color:var(–bg);padding:11px 12px;font-size:.82rem;border-radius:var(–radius-sm);
+box-shadow:0 4px 20px var(–glow);cursor:pointer;border:none;
+font-family:‘Syne’,sans-serif;font-weight:800;transition:all .2s;letter-spacing:.05em;}
+.btn-primary:hover{opacity:.9;transform:translateY(-2px);box-shadow:0 8px 28px var(–glow);}
+.btn-primary:active{transform:translateY(0);}
+.btn-secondary{background:var(–surface3);color:var(–text2);padding:11px 12px;border:1px solid var(–border);
+cursor:pointer;font-family:‘Syne’,sans-serif;font-weight:700;font-size:.78rem;
+border-radius:var(–radius-sm);transition:all .2s;}
+.btn-secondary:hover{border-color:var(–err);color:var(–err);transform:translateY(-1px);}
+
+/* ── RESULT SECTION ─────────────────────────────────────────────────────────── */
+.result-section{padding:22px 24px;}
+.result-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;}
+
+/* Big result with animation */
+.big-result{display:flex;align-items:center;justify-content:center;gap:16px;padding:20px;
+background:linear-gradient(135deg,rgba(8,9,15,.95),rgba(16,18,26,.9));
+border:1px solid var(–border2);border-radius:var(–radius);margin-bottom:16px;
+flex-wrap:wrap;position:relative;overflow:hidden;
+box-shadow:0 0 40px var(–glow),inset 0 0 30px rgba(0,0,0,.3);}
+.big-result::before{content:’’;position:absolute;inset:0;
+background:linear-gradient(135deg,var(–glow) 0%,transparent 60%,var(–glow2) 100%);
+opacity:.6;pointer-events:none;}
+.big-result-inner{display:flex;align-items:center;gap:16px;flex-wrap:wrap;position:relative;}
+.big-frac{display:flex;flex-direction:column;align-items:center;gap:3px;
+animation:resultPop .5s cubic-bezier(.2,1,.3,1);}
+@keyframes resultPop{from{opacity:0;transform:scale(.6);}to{opacity:1;transform:scale(1);}}
+.big-frac-num,.big-frac-den{font-family:‘DM Serif Display’,serif;font-size:2.8rem;color:var(–text);line-height:1;}
+.big-frac-line{width:100%;height:3px;background:linear-gradient(90deg,var(–accent),var(–accent2));
+border-radius:3px;min-width:60px;box-shadow:0 0 10px var(–glow);}
+.big-whole{font-family:‘DM Serif Display’,serif;font-size:3rem;color:var(–text);line-height:1;
+animation:resultPop .5s cubic-bezier(.2,1,.3,1);}
 .result-sep{color:var(–border2);font-size:1.8rem;}
-.result-decimal{font-family:‘DM Mono’,monospace;font-size:1.05rem;color:var(–accent2);background:var(–surface3);padding:5px 13px;border-radius:var(–radius-sm);border:1px solid var(–border);}
+.result-decimal{font-family:‘DM Mono’,monospace;font-size:1rem;color:var(–accent2);
+background:rgba(167,139,250,.1);padding:5px 13px;border-radius:var(–radius-sm);
+border:1px solid rgba(167,139,250,.3);animation:resultPop .5s cubic-bezier(.2,1,.3,1) .1s both;}
+.result-badges{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;
+animation:resultPop .5s cubic-bezier(.2,1,.3,1) .2s both;}
+.badge{font-family:‘DM Mono’,monospace;font-size:.68rem;padding:3px 10px;border-radius:5px;border:1px solid;letter-spacing:.06em;}
+.badge-pct{background:rgba(56,189,248,.1);color:var(–accent3);border-color:rgba(56,189,248,.25);}
+.badge-improp{background:rgba(108,143,255,.1);color:var(–accent);border-color:rgba(108,143,255,.25);}
+.badge-mixed{background:rgba(167,139,250,.1);color:var(–accent2);border-color:rgba(167,139,250,.25);}
+.badge-dec{background:rgba(74,222,128,.1);color:var(–success);border-color:rgba(74,222,128,.25);}
 
-.methods-grid{display:grid;gap:10px;}
-@keyframes methodIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.method-card{background:var(–surface2);border:1px solid var(–border);border-radius:var(–radius);overflow:hidden;animation:methodIn .3s ease both;transition:background .4s,border-color .2s;}
-.method-card:hover{border-color:var(–border2);}
-.method-card:nth-child(1){animation-delay:.04s}.method-card:nth-child(2){animation-delay:.08s}.method-card:nth-child(3){animation-delay:.12s}.method-card:nth-child(4){animation-delay:.16s}.method-card:nth-child(5){animation-delay:.2s}
-.method-header{display:flex;align-items:center;gap:9px;padding:13px 16px;cursor:pointer;user-select:none;border-bottom:1px solid transparent;transition:border-color .2s;}
+/* ── METHODS ─────────────────────────────────────────────────────────────── */
+.methods-grid{display:grid;gap:9px;}
+@keyframes methodIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.method-card{background:var(–surface2);border:1px solid var(–border);border-radius:var(–radius);
+overflow:hidden;animation:methodIn .35s ease both;transition:background .4s,border-color .25s,box-shadow .25s;}
+.method-card:hover{border-color:var(–border2);box-shadow:0 2px 20px rgba(0,0,0,.3);}
+.method-card:nth-child(1){animation-delay:.04s}.method-card:nth-child(2){animation-delay:.08s}
+.method-card:nth-child(3){animation-delay:.12s}.method-card:nth-child(4){animation-delay:.16s}
+.method-card:nth-child(5){animation-delay:.2s}.method-card:nth-child(6){animation-delay:.24s}
+.method-header{display:flex;align-items:center;gap:9px;padding:13px 15px;cursor:pointer;
+user-select:none;border-bottom:1px solid transparent;transition:border-color .2s,background .2s;}
+.method-header:hover{background:rgba(255,255,255,.02);}
 .method-card.open .method-header{border-bottom-color:var(–border);}
-.method-num{width:25px;height:25px;border-radius:6px;background:var(–glow);border:1px solid var(–accent);display:flex;align-items:center;justify-content:center;font-family:‘DM Mono’,monospace;font-size:.66rem;color:var(–accent);flex-shrink:0;}
-.method-name{flex:1;font-size:.8rem;font-weight:700;letter-spacing:.04em;color:var(–text2);}
-.chevron{color:var(–text3);font-size:.65rem;transition:transform .25s;flex-shrink:0;}
+.method-num{width:26px;height:26px;border-radius:7px;
+background:linear-gradient(135deg,var(–glow),var(–glow2));
+border:1px solid var(–accent);display:flex;align-items:center;justify-content:center;
+font-family:‘DM Mono’,monospace;font-size:.65rem;color:var(–accent);flex-shrink:0;
+box-shadow:0 0 8px var(–glow);}
+.method-name{flex:1;font-size:.78rem;font-weight:700;letter-spacing:.04em;color:var(–text2);}
+.chevron{color:var(–text3);font-size:.62rem;transition:transform .28s;flex-shrink:0;}
 .method-card.open .chevron{transform:rotate(180deg);}
-.method-body{display:none;padding:14px 16px;}
-.method-card.open .method-body{display:block;}
-.step-list{display:flex;flex-direction:column;gap:9px;}
-.step{display:flex;gap:10px;align-items:flex-start;}
-.step-num{width:21px;height:21px;border-radius:50%;background:var(–surface3);border:1px solid var(–border2);display:flex;align-items:center;justify-content:center;font-family:‘DM Mono’,monospace;font-size:.62rem;color:var(–text3);flex-shrink:0;margin-top:1px;}
-.step-content{flex:1;font-size:.8rem;color:var(–text2);line-height:1.65;}
-.step-content .formula{display:inline-flex;align-items:center;gap:5px;background:var(–surface3);border-radius:5px;padding:3px 9px;margin:3px 0;font-family:‘DM Mono’,monospace;font-size:.76rem;color:var(–text);border:1px solid var(–border);}
-.inline-frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;gap:1px;margin:0 2px;}
-.inline-frac .fn{font-size:.7em;line-height:1.1;}
-.inline-frac .fl{width:100%;height:1px;background:var(–accent);min-width:14px;}
-.inline-frac .fd{font-size:.7em;line-height:1.1;}
-.highlight{color:var(–accent);font-weight:700;}
-.tag{display:inline-block;padding:2px 7px;border-radius:4px;font-size:.62rem;font-family:‘DM Mono’,monospace;letter-spacing:.08em;text-transform:uppercase;}
+.method-body{max-height:0;overflow:hidden;transition:max-height .35s cubic-bezier(.2,1,.3,1);}
+.method-card.open .method-body{max-height:600px;}
+.method-body-inner{padding:13px 15px;}
+.step-list{display:flex;flex-direction:column;gap:8px;}
+.step{display:flex;gap:9px;align-items:flex-start;}
+.step-num{width:20px;height:20px;border-radius:50%;background:var(–surface3);
+border:1px solid var(–border2);display:flex;align-items:center;justify-content:center;
+font-family:‘DM Mono’,monospace;font-size:.6rem;color:var(–text3);flex-shrink:0;margin-top:2px;}
+.step-content{flex:1;font-size:.78rem;color:var(–text2);line-height:1.7;}
+.formula{display:inline-flex;align-items:center;gap:4px;background:var(–surface3);
+border-radius:5px;padding:3px 9px;margin:2px 0;font-family:‘DM Mono’,monospace;
+font-size:.74rem;color:var(–text);border:1px solid var(–border2);}
+.inline-frac{display:inline-flex;flex-direction:column;align-items:center;
+vertical-align:middle;gap:1px;margin:0 2px;}
+.inline-frac .fn{font-size:.68em;line-height:1.1;}
+.inline-frac .fl{width:100%;height:1px;background:var(–accent);min-width:13px;}
+.inline-frac .fd{font-size:.68em;line-height:1.1;}
+.hi{color:var(–accent);font-weight:700;}
+.hi2{color:var(–accent2);}
+.hi3{color:var(–accent3);}
+.tag{display:inline-block;padding:2px 7px;border-radius:4px;font-size:.6rem;
+font-family:‘DM Mono’,monospace;letter-spacing:.08em;text-transform:uppercase;}
 .tag-best{background:rgba(74,222,128,.12);color:var(–success);border:1px solid rgba(74,222,128,.3);}
 
-.empty-state{text-align:center;padding:36px 20px;color:var(–text3);}
-.empty-icon{font-size:2.4rem;margin-bottom:10px;opacity:.45;}
-.empty-text{font-family:‘DM Mono’,monospace;font-size:.78rem;line-height:1.8;}
-.error-box{background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.3);border-radius:var(–radius-sm);padding:12px 16px;color:var(–err);font-family:‘DM Mono’,monospace;font-size:.8rem;display:flex;align-items:center;gap:7px;}
+/* ── HISTORY ─────────────────────────────────────────────────────────────── */
+.history-card{background:var(–surface);border:1px solid var(–border);border-radius:var(–radius);
+overflow:hidden;animation:cardIn .6s cubic-bezier(.2,1,.3,1) .15s both;
+box-shadow:0 4px 30px rgba(0,0,0,.35);}
+.history-header{display:flex;align-items:center;justify-content:space-between;
+padding:14px 20px;border-bottom:1px solid var(–border);cursor:pointer;}
+.history-list{max-height:0;overflow:hidden;transition:max-height .4s cubic-bezier(.2,1,.3,1);}
+.history-card.open .history-list{max-height:400px;overflow-y:auto;}
+.history-item{display:flex;align-items:center;justify-content:space-between;
+padding:10px 20px;border-bottom:1px solid var(–border);cursor:pointer;
+transition:background .15s;animation:methodIn .25s ease both;}
+.history-item:hover{background:rgba(255,255,255,.03);}
+.history-item:last-child{border-bottom:none;}
+.history-expr{font-family:‘DM Mono’,monospace;font-size:.8rem;color:var(–text2);}
+.history-res{font-family:‘DM Serif Display’,serif;font-size:1rem;color:var(–accent);}
+.history-time{font-family:‘DM Mono’,monospace;font-size:.62rem;color:var(–text3);}
 
-@media(max-width:600px){.keypad-area{grid-template-columns:1fr;}.logo-title{font-size:1.5rem;}.big-frac-num,.big-frac-den,.big-whole{font-size:1.9rem;}.input-tabs{gap:4px;}.tab-btn{padding:5px 9px;font-size:.68rem;}}
-@keyframes pulse-glow{0%{box-shadow:0 0 0 0 var(–glow)}70%{box-shadow:0 0 0 10px transparent}100%{box-shadow:0 0 0 0 transparent}}
-.pulse{animation:pulse-glow .5s ease;}
+/* ── EMPTY / ERROR ───────────────────────────────────────────────────────── */
+.empty-state{text-align:center;padding:36px 20px;color:var(–text3);
+animation:cardIn .5s ease both;}
+.empty-icon{font-size:2.8rem;margin-bottom:12px;opacity:.4;
+animation:float 3s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+.empty-text{font-family:‘DM Mono’,monospace;font-size:.76rem;line-height:1.9;}
+.error-box{background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.3);
+border-radius:var(–radius-sm);padding:12px 16px;color:var(–err);
+font-family:‘DM Mono’,monospace;font-size:.78rem;display:flex;align-items:center;gap:7px;
+animation:shake .4s ease;}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);}}
+
+/* ── SUCCESS FLASH ───────────────────────────────────────────────────────── */
+@keyframes successFlash{0%{box-shadow:0 0 0 0 var(–glow);}50%{box-shadow:0 0 40px 8px var(–glow);}100%{box-shadow:0 0 0 0 var(–glow);}}
+.flash{animation:successFlash .6s ease;}
+
+@media(max-width:620px){
+.keypad-area{grid-template-columns:1fr;}
+.logo-title{font-size:1.55rem;}
+.big-frac-num,.big-frac-den,.big-whole{font-size:2rem;}
+.extra-grid{grid-template-columns:repeat(4,1fr);}
+}
 </style>
 
 </head>
 <body>
+
+<!-- Animated BG -->
+
+<div class="aurora">
+  <div class="aurora-blob"></div>
+  <div class="aurora-blob"></div>
+  <div class="aurora-blob"></div>
+</div>
+<div class="grid-overlay"></div>
+<div class="floaters" id="floaters"></div>
+
 <div class="container">
+  <!-- HEADER -->
   <header>
     <div class="logo">
-      <span class="logo-title" data-i18n="title">Дроби</span>
-      <span class="logo-sub" data-i18n="subtitle">Калькулятор · до 10 методов решения</span>
+      <span class="logo-title" data-i="title">Дроби</span>
+      <span class="logo-sub" data-i="subtitle">Калькулятор · до 10 методов</span>
     </div>
     <div class="header-right">
       <div class="lang-row">
@@ -169,126 +357,146 @@ header{display:flex;align-items:center;justify-content:space-between;margin-bott
         <button class="lang-btn" onclick="setLang('en',this)">EN</button>
       </div>
       <div class="theme-row">
-        <span class="theme-label" data-i18n="theme">тема</span>
-        <div class="theme-dot active" data-theme="default" onclick="setTheme('default',this)"></div>
-        <div class="theme-dot" data-theme="violet"  onclick="setTheme('violet',this)"></div>
-        <div class="theme-dot" data-theme="emerald" onclick="setTheme('emerald',this)"></div>
-        <div class="theme-dot" data-theme="amber"   onclick="setTheme('amber',this)"></div>
-        <div class="theme-dot" data-theme="rose"    onclick="setTheme('rose',this)"></div>
-        <div class="theme-dot" data-theme="cyan"    onclick="setTheme('cyan',this)"></div>
+        <span class="theme-label" data-i="theme">тема</span>
+        <div class="theme-dot active" data-t="default" onclick="setTheme('default',this)"></div>
+        <div class="theme-dot" data-t="violet"  onclick="setTheme('violet',this)"></div>
+        <div class="theme-dot" data-t="emerald" onclick="setTheme('emerald',this)"></div>
+        <div class="theme-dot" data-t="amber"   onclick="setTheme('amber',this)"></div>
+        <div class="theme-dot" data-t="rose"    onclick="setTheme('rose',this)"></div>
+        <div class="theme-dot" data-t="cyan"    onclick="setTheme('cyan',this)"></div>
       </div>
     </div>
   </header>
 
+  <!-- MAIN CARD -->
+
   <div class="card">
     <div class="input-section">
-      <div class="section-title" data-i18n="expression">выражение</div>
-      <div class="expression-display" id="exprDisplay">
-        <span class="expr-placeholder" data-i18n="placeholder">Введите числа и выберите операцию…</span>
-      </div>
+      <div class="section-title" data-i="expression">выражение</div>
 
 ```
+  <!-- Expression display -->
+  <div class="expr-wrap">
+    <div class="expression-display" id="exprDisplay">
+      <span class="expr-placeholder" data-i="placeholder">Введите выражение…</span>
+    </div>
+  </div>
+
+  <!-- Type tabs -->
   <div class="input-tabs">
-    <button class="tab-btn active" onclick="switchTab('int',this)"  data-i18n="tabInt">Целое</button>
-    <button class="tab-btn"        onclick="switchTab('dec',this)"  data-i18n="tabDec">Десятичное</button>
-    <button class="tab-btn"        onclick="switchTab('frac',this)" data-i18n="tabFrac">Дробь</button>
-    <button class="tab-btn"        onclick="switchTab('mixed',this)" data-i18n="tabMixed">Смешанное</button>
+    <button class="tab-btn active" onclick="switchTab('int',this)"   data-i="tabInt">Целое</button>
+    <button class="tab-btn"        onclick="switchTab('dec',this)"   data-i="tabDec">Десятичное</button>
+    <button class="tab-btn"        onclick="switchTab('frac',this)"  data-i="tabFrac">Дробь</button>
+    <button class="tab-btn"        onclick="switchTab('mixed',this)" data-i="tabMixed">Смешанное</button>
   </div>
 
   <div class="keypad-area">
+    <!-- LEFT: entry -->
     <div class="keypad-panel">
-      <div class="panel-title" data-i18n="panelInput">Ввод числа</div>
+      <div class="panel-title" data-i="panelInput">Ввод числа</div>
 
-      <!-- INTEGER -->
       <div class="tab-pane active" id="pane-int">
         <div class="entry-builder">
           <div class="entry-inputs cols-1">
             <div class="entry-field-wrap">
-              <span class="field-label" data-i18n="integer">Число</span>
+              <span class="field-label" data-i="integer">Число</span>
               <input class="entry-field" id="iInt" type="number" placeholder="42" step="1">
             </div>
           </div>
           <div class="entry-row">
-            <button class="btn btn-add" onclick="addFromTab()" data-i18n="add">＋ Добавить</button>
-            <button class="btn btn-sm danger" onclick="clearEntry()" data-i18n="clear">✕</button>
+            <button class="btn btn-add" onclick="addFromTab()" data-i="add">＋ Добавить</button>
+            <button class="btn btn-sm danger" onclick="clearEntry()" data-i="clear">✕</button>
           </div>
         </div>
       </div>
 
-      <!-- DECIMAL -->
       <div class="tab-pane" id="pane-dec">
         <div class="entry-builder">
           <div class="entry-inputs cols-1">
             <div class="entry-field-wrap">
-              <span class="field-label" data-i18n="decimal">Десятичное (напр. 3.14)</span>
+              <span class="field-label" data-i="decimal">Десятичное</span>
               <input class="entry-field" id="iDec" type="number" placeholder="3.14" step="any">
             </div>
           </div>
           <div class="entry-row">
-            <button class="btn btn-add" onclick="addFromTab()" data-i18n="add">＋ Добавить</button>
-            <button class="btn btn-sm danger" onclick="clearEntry()" data-i18n="clear">✕</button>
+            <button class="btn btn-add" onclick="addFromTab()" data-i="add">＋ Добавить</button>
+            <button class="btn btn-sm danger" onclick="clearEntry()" data-i="clear">✕</button>
           </div>
         </div>
       </div>
 
-      <!-- FRACTION -->
       <div class="tab-pane" id="pane-frac">
         <div class="entry-builder">
           <div class="entry-inputs cols-3">
             <div class="entry-field-wrap">
-              <span class="field-label" data-i18n="numerator">Числитель</span>
+              <span class="field-label" data-i="numerator">Числитель</span>
               <input class="entry-field" id="fNum" type="number" placeholder="3">
             </div>
             <div class="frac-divider">/</div>
             <div class="entry-field-wrap">
-              <span class="field-label" data-i18n="denominator">Знаменатель</span>
+              <span class="field-label" data-i="denominator">Знаменатель</span>
               <input class="entry-field" id="fDen" type="number" placeholder="4" min="1">
             </div>
           </div>
           <div class="entry-row">
-            <button class="btn btn-add" onclick="addFromTab()" data-i18n="add">＋ Добавить</button>
-            <button class="btn btn-sm" onclick="toggleSign()" data-i18n="sign">± знак</button>
-            <button class="btn btn-sm danger" onclick="clearEntry()" data-i18n="clear">✕</button>
+            <button class="btn btn-add" onclick="addFromTab()" data-i="add">＋ Добавить</button>
+            <button class="btn btn-sm" onclick="toggleSign()" data-i="sign">± знак</button>
+            <button class="btn btn-sm danger" onclick="clearEntry()" data-i="clear">✕</button>
           </div>
         </div>
       </div>
 
-      <!-- MIXED -->
       <div class="tab-pane" id="pane-mixed">
         <div class="entry-builder">
           <div class="entry-inputs cols-3">
             <div class="entry-field-wrap">
-              <span class="field-label" data-i18n="wholeP">Целая</span>
+              <span class="field-label" data-i="wholeP">Целая</span>
               <input class="entry-field" id="mWhole" type="number" placeholder="1" min="0">
             </div>
             <div class="entry-field-wrap">
-              <span class="field-label" data-i18n="numerator">Числит.</span>
+              <span class="field-label" data-i="numerator">Числит.</span>
               <input class="entry-field" id="mNum" type="number" placeholder="2" min="0">
             </div>
             <div class="entry-field-wrap">
-              <span class="field-label" data-i18n="denominator">Знамен.</span>
+              <span class="field-label" data-i="denominator">Знамен.</span>
               <input class="entry-field" id="mDen" type="number" placeholder="3" min="1">
             </div>
           </div>
           <div class="entry-row">
-            <button class="btn btn-add" onclick="addFromTab()" data-i18n="add">＋ Добавить</button>
-            <button class="btn btn-sm" onclick="toggleSign()" data-i18n="sign">± знак</button>
-            <button class="btn btn-sm danger" onclick="clearEntry()" data-i18n="clear">✕</button>
+            <button class="btn btn-add" onclick="addFromTab()" data-i="add">＋ Добавить</button>
+            <button class="btn btn-sm" onclick="toggleSign()" data-i="sign">± знак</button>
+            <button class="btn btn-sm danger" onclick="clearEntry()" data-i="clear">✕</button>
           </div>
         </div>
       </div>
     </div>
 
+    <!-- RIGHT: operators + extra -->
     <div class="keypad-panel">
-      <div class="panel-title" data-i18n="panelOp">Операция и управление</div>
+      <div class="panel-title" data-i="panelOp">Операции</div>
+
+      <!-- Main operators -->
       <div class="ops-grid">
         <button class="btn-op" data-op="+" onclick="selectOp('+',this)">＋</button>
         <button class="btn-op" data-op="-" onclick="selectOp('-',this)">－</button>
         <button class="btn-op" data-op="*" onclick="selectOp('*',this)">×</button>
         <button class="btn-op" data-op="/" onclick="selectOp('/',this)">÷</button>
       </div>
+
+      <!-- Extra functions -->
+      <div class="extra-grid">
+        <button class="btn-extra" onclick="addBracket('(')" id="btnOpenB">( )</button>
+        <button class="btn-extra" onclick="addFunc('sqrt')"  title="Square root">√x</button>
+        <button class="btn-extra" onclick="addFunc('sq')"    title="Square">x²</button>
+        <button class="btn-extra" onclick="addFunc('inv')"   title="Inverse">1/x</button>
+        <button class="btn-extra" onclick="addFunc('pct')"   title="Percent">%</button>
+        <button class="btn-extra" onclick="addFunc('abs')"   title="Absolute value">|x|</button>
+        <button class="btn-extra" onclick="addFunc('neg')"   title="Negate">±</button>
+        <button class="btn-extra" onclick="addFunc('floor')" title="Floor">⌊x⌋</button>
+      </div>
+
       <div class="control-row">
-        <button class="btn-primary" onclick="calculate()" data-i18n="solve">= Решить</button>
+        <button class="btn-primary" onclick="calculate()" data-i="solve">= Решить</button>
         <button class="btn-secondary" onclick="removeLastToken()">⌫</button>
         <button class="btn-secondary" onclick="clearAll()">AC</button>
       </div>
@@ -296,177 +504,199 @@ header{display:flex;align-items:center;justify-content:space-between;margin-bott
   </div>
 </div>
 
+<!-- RESULT -->
 <div class="result-section">
   <div class="result-header">
-    <div class="section-title" style="margin:0" data-i18n="methods">методы решения</div>
-    <div id="methodCount" style="font-size:.68rem;color:var(--text3);font-family:'DM Mono',monospace;"></div>
+    <div class="section-title" style="margin:0" data-i="methods">методы решения</div>
+    <div id="methodCount" style="font-size:.65rem;color:var(--text3);font-family:'DM Mono',monospace;"></div>
   </div>
   <div id="resultArea">
     <div class="empty-state">
       <div class="empty-icon">⅗</div>
-      <div class="empty-text" data-i18n="emptyHint">Введите два числа, выберите операцию<br>и нажмите <strong style="color:var(--accent)">= Решить</strong></div>
+      <div class="empty-text" data-i="emptyHint">Введите два числа, выберите операцию<br>и нажмите <strong style="color:var(--accent)">= Решить</strong></div>
     </div>
   </div>
 </div>
 ```
 
   </div>
+
+  <!-- HISTORY CARD -->
+
+  <div class="history-card" id="historyCard">
+    <div class="history-header" onclick="toggleHistory()">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text3);font-family:'DM Mono',monospace;" data-i="history">история</span>
+        <span id="histBadge" style="display:none;background:var(--accent);color:var(--bg);font-family:'DM Mono',monospace;font-size:.6rem;padding:1px 6px;border-radius:10px;font-weight:700;"></span>
+      </div>
+      <span id="histChevron" style="color:var(--text3);font-size:.6rem;transition:transform .3s;">▼</span>
+    </div>
+    <div class="history-list" id="historyList">
+      <div style="padding:20px;text-align:center;color:var(--text3);font-family:'DM Mono',monospace;font-size:.76rem;" data-i="noHistory">Нет истории</div>
+    </div>
+  </div>
 </div>
 
 <script>
-// ── I18N ──────────────────────────────────────────────────────────────────────
-const I18N = {
+// ═══════════════════════════════════════════════════════
+//  FLOATING SYMBOLS BACKGROUND
+// ═══════════════════════════════════════════════════════
+(function(){
+  const syms=['½','⅓','⅔','¼','¾','⅛','⅜','÷','×','√','π','∞','Σ','∫','≠','≈','±'];
+  const cont=document.getElementById('floaters');
+  syms.forEach((s,i)=>{
+    const el=document.createElement('span');
+    el.className='floater';
+    el.textContent=s;
+    el.style.cssText=`
+      left:${5+Math.random()*90}%;
+      font-size:${1.2+Math.random()*2.5}rem;
+      animation-duration:${18+Math.random()*20}s;
+      animation-delay:${-Math.random()*20}s;
+    `;
+    cont.appendChild(el);
+  });
+})();
+
+// ═══════════════════════════════════════════════════════
+//  I18N
+// ═══════════════════════════════════════════════════════
+const I18N={
   ru:{
-    title:'Дроби',subtitle:'Калькулятор · до 10 методов решения',
-    theme:'тема',expression:'выражение',
-    placeholder:'Введите числа и выберите операцию…',
+    title:'Дроби',subtitle:'Калькулятор · до 10 методов',theme:'тема',
+    expression:'выражение',placeholder:'Введите выражение с числами и операциями…',
     tabInt:'Целое',tabDec:'Десятичное',tabFrac:'Дробь',tabMixed:'Смешанное',
-    panelInput:'Ввод числа',panelOp:'Операция и управление',
-    integer:'Число',decimal:'Десятичное (напр. 3,14)',
+    panelInput:'Ввод числа',panelOp:'Операции',
+    integer:'Число',decimal:'Десятичное (напр. 3.14)',
     numerator:'Числитель',denominator:'Знаменатель',
     wholeP:'Целая',sign:'± знак',add:'＋ Добавить',clear:'✕',solve:'= Решить',
-    methods:'методы решения',
+    methods:'методы решения',history:'история',noHistory:'Нет истории',
     emptyHint:'Введите два числа, выберите операцию<br>и нажмите <strong style="color:var(--accent)">= Решить</strong>',
     of:'из',methodsOf:'методов',best:'Лучший',
-    mStd:'Стандартный (НОК знаменателей)',mStdSame:'Стандартный (одинак. знаменатели)',
+    mStd:'Стандартный (НОК)',mStdSame:'Стандартный (одинак. знам.)',
     mMul:'Умножение дробей',mDiv:'Деление дробей',
-    mMixed:'Через смешанные числа',mGcdLcm:'Метод НОД/НОК (упрощение)',
-    mNumLine:'Числовая прямая (десятичные)',mCross:'Перекрёстное умножение',
-    mPrime:'Разложение на простые',mEuclid:'Алгоритм Евклида',
-    mDirect:'Прямая формула',mVisual:'Визуальная схема',mVerify:'Проверка обратным действием',
+    mMixed:'Через смешанные числа',mGcdLcm:'НОД/НОК метод',
+    mNumLine:'Числовая прямая',mCross:'Перекрёстное умножение',
+    mPrime:'Простые множители',mEuclid:'Алгоритм Евклида',
+    mDirect:'Прямая формула',mVisual:'Визуальная схема',mVerify:'Проверка обратным',
     opAdd:'сложение',opSub:'вычитание',opMul:'умножение',opDiv:'деление',
-    errTwo:'Нужно минимум два числа!',errOp:'Выберите операцию (+ − × ÷)!',
+    errTwo:'Нужно минимум два числа!',errOp:'Выберите операцию!',
     errZeroDen:'Знаменатель не может быть 0!',errZeroNum:'Введите число!',
-    errDivZero:'Деление на ноль!',errCalc:'Ошибка вычисления',
-    sGcd:'НОД',sLcm:'НОК',sReduce:'Сокращаем',sResult:'Результат',
-    sApply:'Применяем формулу',sFinalAns:'Конечный ответ',
-    sToDec:'Переводим в десятичные',sToFrac:'Переводим обратно в дробь',
-    sFlip:'Переворачиваем вторую дробь',sMulInstead:'Заменяем деление на умножение',
+    errDivZero:'Деление на ноль!',errCalc:'Ошибка вычисления',errBracket:'Незакрытая скобка!',
+    sGcd:'НОД',sLcm:'НОК',sReduce:'Сокращаем',sResult:'Результат',sApply:'Применяем',
+    sFinalAns:'Ответ',sToDec:'В десятичные',sToFrac:'В дробь',
+    sFlip:'Переворачиваем',sMulInst:'Деление → умножение',
     sNums:'Числители',sDens:'Знаменатели',
-    sEqDen:'Знаменатели одинаковы',sAddDir:'складываем числители напрямую',
-    sDenStays:'Знаменатель остаётся',sFindLcm:'Находим НОК',sBring:'Приводим дроби',
-    sConvMix:'Переводим в смешанные',sWorkSep:'Работаем с целыми и дробными частями отдельно.',
-    sBackImpr:'Переводим обратно и выполняем',sTotal:'Итог',
-    sMulN:'Умножаем числители',sMulD:'Умножаем знаменатели',sGet:'Получаем',
-    sSimpl:'Сокращаем (НОД =',sCrossN:'Числитель (крест)',sCrossD:'Знаменатель',
-    sBefore:'До сокращения',sCommon:'Сокращаем общие множители',
-    sEuclid:'Алгоритм Евклида для НОД',sAfter:'После приведения',
-    sWasRes:'Результат был',sApplyRev:'Применяем обратную операцию',
-    sMatchInit:'✓ Совпадает с исходным',sCorrect:'верно!',
-    sCheckRes:'Результат проверки',sImposs:'Проверка невозможна (деление на 0)',
-    sN1:'Число 1',sN2:'Число 2',sResOf:'Результат',sDecConv:'Как десятичное',
+    sEqDen:'Знаменатели равны',sAddDir:'складываем напрямую',sDenStays:'Знаменатель не меняется',
+    sFindLcm:'Находим НОК',sBring:'Приводим',sConvMix:'В смешанные',
+    sWorkSep:'Целые и дробные части — отдельно.',sBackImpr:'Обратно в неправильную и',sTotal:'Итог',
+    sMulN:'Числители умножаем',sMulD:'Знаменатели умножаем',sGet:'Получаем',
+    sSimpl:'Сокращаем (НОД=',sCrossN:'Числитель (крест)',sCrossD:'Знаменатель',
+    sBefore:'До сокращения',sCommon:'Общие множители',sEuclid:'Алгоритм Евклида',sAfter:'После',
+    sWasRes:'Результат был',sApplyRev:'Обратная операция',
+    sMatchInit:'✓ Совпадает с',sCorrect:'верно!',sCheckRes:'Проверка',sImposs:'Невозможно (÷0)',
+    sN1:'Число 1',sN2:'Число 2',sResOf:'Результат',
   },
   uk:{
-    title:'Дроби',subtitle:'Калькулятор · до 10 методів розвʼязання',
-    theme:'тема',expression:'вираз',
-    placeholder:'Введіть числа та оберіть операцію…',
+    title:'Дроби',subtitle:'Калькулятор · до 10 методів',theme:'тема',
+    expression:'вираз',placeholder:'Введіть вираз з числами та операціями…',
     tabInt:'Ціле',tabDec:'Десяткове',tabFrac:'Дріб',tabMixed:'Мішане',
-    panelInput:'Введення числа',panelOp:'Операція та керування',
-    integer:'Число',decimal:'Десяткове (напр. 3,14)',
+    panelInput:'Введення числа',panelOp:'Операції',
+    integer:'Число',decimal:'Десяткове (напр. 3.14)',
     numerator:'Чисельник',denominator:'Знаменник',
     wholeP:'Ціла',sign:'± знак',add:'＋ Додати',clear:'✕',solve:'= Розвʼязати',
-    methods:'методи розвʼязання',
+    methods:'методи розвʼязання',history:'історія',noHistory:'Немає історії',
     emptyHint:'Введіть два числа, оберіть операцію<br>і натисніть <strong style="color:var(--accent)">= Розвʼязати</strong>',
     of:'з',methodsOf:'методів',best:'Найкращий',
-    mStd:'Стандартний (НСК знаменників)',mStdSame:'Стандартний (однак. знаменники)',
+    mStd:'Стандартний (НСК)',mStdSame:'Стандартний (однак. знам.)',
     mMul:'Множення дробів',mDiv:'Ділення дробів',
-    mMixed:'Через мішані числа',mGcdLcm:'Метод НСД/НСК (спрощення)',
-    mNumLine:'Числова пряма (десяткові)',mCross:'Хресне множення',
-    mPrime:'Розкладання на прості',mEuclid:'Алгоритм Евкліда',
-    mDirect:'Пряма формула',mVisual:'Візуальна схема',mVerify:'Перевірка оберненою дією',
+    mMixed:'Через мішані числа',mGcdLcm:'НСД/НСК метод',
+    mNumLine:'Числова пряма',mCross:'Хресне множення',
+    mPrime:'Прості множники',mEuclid:'Алгоритм Евкліда',
+    mDirect:'Пряма формула',mVisual:'Візуальна схема',mVerify:'Перевірка оберненим',
     opAdd:'додавання',opSub:'віднімання',opMul:'множення',opDiv:'ділення',
-    errTwo:'Потрібно мінімум два числа!',errOp:'Оберіть операцію (+ − × ÷)!',
+    errTwo:'Потрібно мінімум два числа!',errOp:'Оберіть операцію!',
     errZeroDen:'Знаменник не може бути 0!',errZeroNum:'Введіть число!',
-    errDivZero:'Ділення на нуль!',errCalc:'Помилка обчислення',
-    sGcd:'НСД',sLcm:'НСК',sReduce:'Скорочуємо',sResult:'Результат',
-    sApply:'Застосовуємо формулу',sFinalAns:'Остаточна відповідь',
-    sToDec:'Переводимо в десяткові',sToFrac:'Переводимо назад у дріб',
-    sFlip:'Перевертаємо другий дріб',sMulInstead:'Замінюємо ділення на множення',
+    errDivZero:'Ділення на нуль!',errCalc:'Помилка обчислення',errBracket:'Незакрита дужка!',
+    sGcd:'НСД',sLcm:'НСК',sReduce:'Скорочуємо',sResult:'Результат',sApply:'Застосовуємо',
+    sFinalAns:'Відповідь',sToDec:'В десяткові',sToFrac:'В дріб',
+    sFlip:'Перевертаємо',sMulInst:'Ділення → множення',
     sNums:'Чисельники',sDens:'Знаменники',
-    sEqDen:'Знаменники однакові',sAddDir:'додаємо чисельники напряму',
-    sDenStays:'Знаменник залишається',sFindLcm:'Знаходимо НСК',sBring:'Зводимо дроби',
-    sConvMix:'Переводимо у мішані',sWorkSep:'Працюємо з цілими та дробовими частинами окремо.',
-    sBackImpr:'Переводимо назад і виконуємо',sTotal:'Підсумок',
-    sMulN:'Множимо чисельники',sMulD:'Множимо знаменники',sGet:'Отримуємо',
-    sSimpl:'Скорочуємо (НСД =',sCrossN:'Чисельник (хресний)',sCrossD:'Знаменник',
-    sBefore:'До скорочення',sCommon:'Скорочуємо спільні множники',
-    sEuclid:'Алгоритм Евкліда для НСД',sAfter:'Після зведення',
-    sWasRes:'Результат був',sApplyRev:'Застосовуємо обернену операцію',
-    sMatchInit:'✓ Збігається з вихідним',sCorrect:'вірно!',
-    sCheckRes:'Результат перевірки',sImposs:'Перевірка неможлива (ділення на 0)',
-    sN1:'Число 1',sN2:'Число 2',sResOf:'Результат',sDecConv:'Як десяткове',
+    sEqDen:'Знаменники рівні',sAddDir:'додаємо напряму',sDenStays:'Знаменник не змінюється',
+    sFindLcm:'Знаходимо НСК',sBring:'Зводимо',sConvMix:'В мішані',
+    sWorkSep:'Цілі та дробові частини — окремо.',sBackImpr:'Назад у неправильний і',sTotal:'Підсумок',
+    sMulN:'Чисельники множимо',sMulD:'Знаменники множимо',sGet:'Отримуємо',
+    sSimpl:'Скорочуємо (НСД=',sCrossN:'Чисельник (хрест)',sCrossD:'Знаменник',
+    sBefore:'До скорочення',sCommon:'Спільні множники',sEuclid:'Алгоритм Евкліда',sAfter:'Після',
+    sWasRes:'Результат був',sApplyRev:'Обернена операція',
+    sMatchInit:'✓ Збігається з',sCorrect:'вірно!',sCheckRes:'Перевірка',sImposs:'Неможливо (÷0)',
+    sN1:'Число 1',sN2:'Число 2',sResOf:'Результат',
   },
   en:{
-    title:'Fractions',subtitle:'Calculator · up to 10 solving methods',
-    theme:'theme',expression:'expression',
-    placeholder:'Enter numbers and select an operation…',
+    title:'Fractions',subtitle:'Calculator · up to 10 methods',theme:'theme',
+    expression:'expression',placeholder:'Enter an expression with numbers and operations…',
     tabInt:'Integer',tabDec:'Decimal',tabFrac:'Fraction',tabMixed:'Mixed',
-    panelInput:'Enter number',panelOp:'Operation & controls',
+    panelInput:'Enter number',panelOp:'Operations',
     integer:'Number',decimal:'Decimal (e.g. 3.14)',
     numerator:'Numerator',denominator:'Denominator',
     wholeP:'Whole',sign:'± sign',add:'＋ Add',clear:'✕',solve:'= Solve',
-    methods:'solving methods',
+    methods:'solving methods',history:'history',noHistory:'No history',
     emptyHint:'Enter two numbers, select an operation<br>and press <strong style="color:var(--accent)">= Solve</strong>',
     of:'of',methodsOf:'methods',best:'Best',
-    mStd:'Standard (LCM of denominators)',mStdSame:'Standard (same denominators)',
+    mStd:'Standard (LCM)',mStdSame:'Standard (same denom.)',
     mMul:'Fraction multiplication',mDiv:'Fraction division',
-    mMixed:'Via mixed numbers',mGcdLcm:'GCD/LCM method (simplification)',
-    mNumLine:'Number line (decimals)',mCross:'Cross-multiplication',
-    mPrime:'Prime factorization',mEuclid:'Euclidean algorithm',
-    mDirect:'Direct formula',mVisual:'Visual diagram',mVerify:'Verification by inverse',
+    mMixed:'Via mixed numbers',mGcdLcm:'GCD/LCM method',
+    mNumLine:'Number line',mCross:'Cross-multiplication',
+    mPrime:'Prime factors',mEuclid:'Euclidean algorithm',
+    mDirect:'Direct formula',mVisual:'Visual diagram',mVerify:'Inverse verification',
     opAdd:'addition',opSub:'subtraction',opMul:'multiplication',opDiv:'division',
-    errTwo:'At least two numbers required!',errOp:'Select an operation (+ − × ÷)!',
+    errTwo:'At least two numbers required!',errOp:'Select an operation!',
     errZeroDen:'Denominator cannot be 0!',errZeroNum:'Enter a number!',
-    errDivZero:'Division by zero!',errCalc:'Calculation error',
-    sGcd:'GCD',sLcm:'LCM',sReduce:'Reduce',sResult:'Result',
-    sApply:'Apply the formula for',sFinalAns:'Final answer',
-    sToDec:'Convert to decimal',sToFrac:'Convert back to fraction',
-    sFlip:'Flip the second fraction',sMulInstead:'Change division to multiplication',
+    errDivZero:'Division by zero!',errCalc:'Calculation error',errBracket:'Unclosed bracket!',
+    sGcd:'GCD',sLcm:'LCM',sReduce:'Reduce',sResult:'Result',sApply:'Apply',
+    sFinalAns:'Answer',sToDec:'To decimal',sToFrac:'To fraction',
+    sFlip:'Flip',sMulInst:'Division → multiplication',
     sNums:'Numerators',sDens:'Denominators',
-    sEqDen:'Denominators are equal',sAddDir:'add numerators directly',
-    sDenStays:'Denominator stays',sFindLcm:'Find LCM',sBring:'Bring fractions to common denom.',
-    sConvMix:'Convert to mixed numbers',sWorkSep:'Work with whole and fractional parts separately.',
-    sBackImpr:'Convert back to improper and perform',sTotal:'Total',
+    sEqDen:'Denominators are equal',sAddDir:'add directly',sDenStays:'Denominator stays',
+    sFindLcm:'Find LCM',sBring:'Bring',sConvMix:'To mixed',
+    sWorkSep:'Whole and fractional parts separately.',sBackImpr:'Back to improper and',sTotal:'Total',
     sMulN:'Multiply numerators',sMulD:'Multiply denominators',sGet:'Get',
-    sSimpl:'Reduce (GCD =',sCrossN:'Numerator (cross)',sCrossD:'Denominator',
-    sBefore:'Before reduction',sCommon:'Cancel common factors',
-    sEuclid:'Euclidean algorithm for GCD',sAfter:'After reducing',
-    sWasRes:'Result was',sApplyRev:'Apply inverse operation',
-    sMatchInit:'✓ Matches initial',sCorrect:'correct!',
-    sCheckRes:'Verification result',sImposs:'Verification impossible (division by zero)',
-    sN1:'Number 1',sN2:'Number 2',sResOf:'Result of',sDecConv:'As decimal',
+    sSimpl:'Reduce (GCD=',sCrossN:'Numerator (cross)',sCrossD:'Denominator',
+    sBefore:'Before reduction',sCommon:'Common factors',sEuclid:'Euclidean algorithm',sAfter:'After',
+    sWasRes:'Result was',sApplyRev:'Inverse operation',
+    sMatchInit:'✓ Matches',sCorrect:'correct!',sCheckRes:'Verification',sImposs:'Impossible (÷0)',
+    sN1:'Number 1',sN2:'Number 2',sResOf:'Result of',
   }
 };
-
 let currentLang='ru';
-function t(k){ return (I18N[currentLang]||I18N.ru)[k] || (I18N.ru[k]||k); }
-
+function t(k){return(I18N[currentLang]||I18N.ru)[k]||(I18N.ru[k]||k);}
 function applyI18n(){
-  document.querySelectorAll('[data-i18n]').forEach(el=>{
-    const k=el.getAttribute('data-i18n');
-    if(k==='emptyHint'||k==='placeholder') el.innerHTML=t(k);
+  document.querySelectorAll('[data-i]').forEach(el=>{
+    const k=el.getAttribute('data-i');
+    if(k==='emptyHint'||k==='placeholder')el.innerHTML=t(k);
     else el.textContent=t(k);
   });
 }
-
 function setLang(lang,el){
-  currentLang=lang;
-  document.documentElement.lang=lang;
+  currentLang=lang;document.documentElement.lang=lang;
   document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
-  el.classList.add('active');
-  applyI18n();
-  if(lastResult) showResults(lastA,lastB,lastOp,lastResult);
+  el.classList.add('active');applyI18n();
+  if(lastResult)showResults(lastA,lastB,lastOp,lastResult);
   else refreshDisplay();
 }
 
-// ── THEME ─────────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════
+//  THEME
+// ═══════════════════════════════════════════════════════
 function setTheme(name,el){
-  document.body.className=name==='default'?'':'theme-'+name;
+  document.body.className=name==='default'?'':'th-'+name;
   document.querySelectorAll('.theme-dot').forEach(d=>d.classList.remove('active'));
   el.classList.add('active');
 }
 
-// ── TABS ──────────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════
+//  TABS
+// ═══════════════════════════════════════════════════════
 let currentTab='int';
 function switchTab(tab,el){
   currentTab=tab;
@@ -476,32 +706,36 @@ function switchTab(tab,el){
   document.getElementById('pane-'+tab).classList.add('active');
 }
 
-// ── STATE ─────────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════
+// Token types: {type:'num',kind:'int'|'dec'|'frac'|'mixed', ...}
+//              {type:'op', value:'+'|'-'|'*'|'/'}
+//              {type:'bracket', value:'('|')'}
+//              {type:'func', value:'sqrt'|'sq'|'inv'|'pct'|'abs'|'neg'|'floor'}
 let tokens=[], selectedOp=null, currentSign=1;
 let lastA=null,lastB=null,lastOp=null,lastResult=null;
+let history=[];
+let openBrackets=0;
 
-// ── MATH ──────────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════
+//  MATH
+// ═══════════════════════════════════════════════════════
 function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a||1;}
 function lcm(a,b){return Math.abs(a*b)/gcd(a,b);}
 function frac(n,d=1){
-  if(d===0)return null;
-  if(d<0){n=-n;d=-d;}
-  const g=gcd(Math.abs(n),d);
-  return{n:n/g,d:d/g};
+  if(d===0)return null;if(d<0){n=-n;d=-d;}
+  const g=gcd(Math.abs(n),d);return{n:n/g,d:d/g};
 }
-// decimal → fraction  e.g. 3.14 → 314/100
 function decToFrac(v){
   if(!isFinite(v))return null;
-  const s=String(v),dot=s.indexOf('.');
+  const s=String(Math.abs(v)),dot=s.indexOf('.');
   if(dot===-1)return frac(Math.round(v));
   const dec=s.length-dot-1,denom=Math.pow(10,dec);
-  return frac(Math.round(v*denom),denom);
+  return frac(Math.sign(v)*Math.round(Math.abs(v)*denom),denom);
 }
 function tokenToFrac(tok){
-  if(tok.kind==='dec'){
-    const f=decToFrac(tok.absVal);
-    return f?frac(tok.sign*f.n,f.d):null;
-  }
+  if(tok.kind==='dec'){const f=decToFrac(tok.absVal);return f?frac(tok.sign*f.n,f.d):null;}
   const w=tok.whole||0,n=tok.num||0,d=tok.den||1;
   if(d===0)return null;
   return frac(tok.sign*(w*d+n),d);
@@ -510,36 +744,65 @@ function fracAdd(a,b){return frac(a.n*b.d+b.n*a.d,a.d*b.d);}
 function fracSub(a,b){return frac(a.n*b.d-b.n*a.d,a.d*b.d);}
 function fracMul(a,b){return frac(a.n*b.n,a.d*b.d);}
 function fracDiv(a,b){if(b.n===0)return null;return frac(a.n*b.d,a.d*b.n);}
+function fracSqrt(a){const v=a.n/a.d;if(v<0)return null;return decToFrac(Math.sqrt(v));}
+function fracSq(a){return frac(a.n*a.n,a.d*a.d);}
+function fracInv(a){if(a.n===0)return null;return frac(a.d,a.n);}
+function fracPct(a){return frac(a.n,a.d*100);}
+function fracAbs(a){return frac(Math.abs(a.n),a.d);}
+function fracNeg(a){return frac(-a.n,a.d);}
+function fracFloor(a){return frac(Math.floor(a.n/a.d));}
+
 function fracToStr(f){
-  if(!f)return '?';
-  if(f.d===1)return `${f.n}`;
+  if(!f)return '?';if(f.d===1)return `${f.n}`;
   const w=Math.trunc(f.n/f.d),r=Math.abs(f.n%f.d);
   if(w!==0&&r!==0)return `${w} ${r}/${f.d}`;
   return r===0?`${f.n}`:`${f.n}/${f.d}`;
 }
 function fracToDec(f){
   if(!f)return 'N/A';
-  return (f.n/f.d).toFixed(8).replace(/0+$/,'').replace(/\.$/,'');
+  const v=f.n/f.d;
+  if(!isFinite(v))return 'N/A';
+  return v.toFixed(8).replace(/0+$/,'').replace(/\.$/,'');
 }
 
-// ── RENDER TOKEN ──────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════
+//  RENDER EXPRESSION
+// ═══════════════════════════════════════════════════════
 function renderToken(tok){
-  if(tok.type==='op'){const s={'+':'＋','-':'－','*':'×','/':'÷'};return `<span class="token-op">${s[tok.value]}</span>`;}
-  const sg=tok.sign<0?'−':'';
-  if(tok.kind==='dec') return `<span class="expr-token token-decimal">${sg}${tok.absVal}</span>`;
-  if(tok.kind==='int') return `<span class="expr-token token-whole">${sg}${tok.whole}</span>`;
+  if(tok.type==='op'){
+    const s={'+':'＋','-':'－','*':'×','/':'÷'};
+    return `<span class="expr-token token-op">${s[tok.value]}</span>`;
+  }
+  if(tok.type==='bracket'){
+    return `<span class="expr-token token-bracket">${tok.value}</span>`;
+  }
+  if(tok.type==='func'){
+    const labels={sqrt:'√',sq:'²',inv:'⁻¹',pct:'%',abs:'|·|',neg:'−',floor:'⌊⌋'};
+    return `<span class="expr-token token-func">${labels[tok.value]||tok.value}</span>`;
+  }
+  // num
+  const sg=tok.sign<0?'<span style="color:var(--err)">−</span>':'';
+  if(tok.kind==='dec')return `<span class="expr-token token-decimal">${sg}${tok.absVal}</span>`;
+  if(tok.kind==='int')return `<span class="expr-token token-int">${sg}${tok.whole}</span>`;
   const w=tok.whole||0,n=tok.num||0,d=tok.den||1;
-  if(w&&n) return `<span class="expr-token token-mixed"><span class="token-whole">${sg}${w}</span><span class="token-frac"><span class="frac-num">${n}</span><span class="frac-line"></span><span class="frac-den">${d}</span></span></span>`;
-  if(n)    return `<span class="expr-token token-frac"><span class="frac-num">${sg}${n}</span><span class="frac-line"></span><span class="frac-den">${d}</span></span>`;
-  return `<span class="expr-token token-whole">${sg}${w}</span>`;
+  if(w&&n)return `<span class="expr-token token-mixed"><span class="token-whole">${sg}${w}</span><span class="token-frac"><span class="frac-num">${n}</span><span class="frac-line"></span><span class="frac-den">${d}</span></span></span>`;
+  if(n) return `<span class="expr-token"><span class="token-frac"><span class="frac-num">${sg}${n}</span><span class="frac-line"></span><span class="frac-den">${d}</span></span></span>`;
+  return `<span class="expr-token token-int">${sg}${w}</span>`;
 }
+
 function refreshDisplay(){
   const el=document.getElementById('exprDisplay');
-  if(!tokens.length){el.innerHTML=`<span class="expr-placeholder">${t('placeholder')}</span>`;return;}
-  el.innerHTML=tokens.map(renderToken).join('');
+  if(!tokens.length){
+    el.innerHTML=`<span class="expr-placeholder">${t('placeholder')}</span><span class="expr-cursor"></span>`;
+    el.classList.remove('has-content');return;
+  }
+  el.innerHTML=tokens.map(renderToken).join('')+'<span class="expr-cursor"></span>';
+  el.classList.add('has-content');
 }
 
-// ── INPUT ACTIONS ─────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════
+//  INPUT ACTIONS
+// ═══════════════════════════════════════════════════════
 function selectOp(op,el){
   document.querySelectorAll('.btn-op').forEach(b=>b.classList.remove('active-op'));
   el.classList.add('active-op');selectedOp=op;
@@ -555,14 +818,12 @@ function addFromTab(){
   if(currentTab==='int'){
     const v=document.getElementById('iInt').value;
     if(v===''||v===null){showError(t('errZeroNum'));return;}
-    const n=parseInt(v);
-    if(!isFinite(n)){showError(t('errZeroNum'));return;}
+    const n=parseInt(v);if(!isFinite(n)){showError(t('errZeroNum'));return;}
     tok={type:'num',kind:'int',whole:Math.abs(n),num:0,den:1,sign:n<0?-1:currentSign};
   } else if(currentTab==='dec'){
     const v=document.getElementById('iDec').value;
     if(v===''||v===null){showError(t('errZeroNum'));return;}
-    const n=parseFloat(v);
-    if(!isFinite(n)){showError(t('errZeroNum'));return;}
+    const n=parseFloat(v);if(!isFinite(n)){showError(t('errZeroNum'));return;}
     tok={type:'num',kind:'dec',absVal:Math.abs(n),sign:n<0?-1:currentSign};
   } else if(currentTab==='frac'){
     const nn=parseInt(document.getElementById('fNum').value)||0;
@@ -578,72 +839,313 @@ function addFromTab(){
     if(ww===0&&nn===0){showError(t('errZeroNum'));return;}
     tok={type:'num',kind:'mixed',whole:Math.abs(ww),num:Math.abs(nn),den:Math.abs(dd),sign:currentSign};
   }
+
   const numToks=tokens.filter(t2=>t2.type==='num');
-  if(numToks.length>=1){
+  const lastTok=tokens[tokens.length-1];
+  // Auto-insert op if previous was a closing bracket or number and op selected
+  if(lastTok&&(lastTok.type==='num'||(lastTok.type==='bracket'&&lastTok.value===')'))){
     if(!selectedOp){showError(t('errOp'));return;}
     tokens.push({type:'op',value:selectedOp});
     document.querySelectorAll('.btn-op').forEach(b=>b.classList.remove('active-op'));
     selectedOp=null;
   }
   tokens.push(tok);currentSign=1;clearEntry();refreshDisplay();
+  animatePop(document.getElementById('exprDisplay').lastElementChild?.previousElementSibling);
 }
-function removeLastToken(){tokens.pop();refreshDisplay();}
+
+function addBracket(type){
+  if(type==='('){
+    // Smart: add open bracket
+    const last=tokens[tokens.length-1];
+    if(last&&(last.type==='num'||(last.type==='bracket'&&last.value===')'))){ 
+      if(selectedOp){tokens.push({type:'op',value:selectedOp});document.querySelectorAll('.btn-op').forEach(b=>b.classList.remove('active-op'));selectedOp=null;}
+    }
+    tokens.push({type:'bracket',value:'('});
+    openBrackets++;
+  } else {
+    if(openBrackets<=0)return;
+    tokens.push({type:'bracket',value:')'});
+    openBrackets--;
+  }
+  refreshDisplay();
+  // Toggle button label
+  document.getElementById('btnOpenB').textContent=openBrackets>0?'  )  ':'( )';
+  document.getElementById('btnOpenB').classList.toggle('active-bracket',openBrackets>0);
+  if(openBrackets>0){
+    // next click will close
+    document.getElementById('btnOpenB').onclick=()=>addBracket(')');
+  } else {
+    document.getElementById('btnOpenB').onclick=()=>addBracket('(');
+  }
+}
+
+function addFunc(name){
+  // Apply function to the last number token
+  const lastNumIdx=tokens.map((t,i)=>t.type==='num'?i:-1).filter(i=>i>=0).pop();
+  if(lastNumIdx===undefined){showError(t('errZeroNum'));return;}
+  const tok=tokens[lastNumIdx];
+  const f=tokenToFrac(tok);
+  if(!f){showError(t('errCalc'));return;}
+  let result=null;
+  switch(name){
+    case 'sqrt':result=fracSqrt(f);break;
+    case 'sq':result=fracSq(f);break;
+    case 'inv':result=fracInv(f);break;
+    case 'pct':result=fracPct(f);break;
+    case 'abs':result=fracAbs(f);break;
+    case 'neg':result=fracNeg(f);break;
+    case 'floor':result=fracFloor(f);break;
+  }
+  if(!result){showError(t('errCalc'));return;}
+  // Replace the token with the result as a fraction token
+  tokens[lastNumIdx]={type:'num',kind:'frac',whole:0,num:result.n,den:result.d,sign:result.n<0?-1:1};
+  if(result.n<0){tokens[lastNumIdx].num=Math.abs(result.n);}
+  if(result.d===1){tokens[lastNumIdx]={type:'num',kind:'int',whole:Math.abs(result.n),num:0,den:1,sign:result.n<0?-1:1};}
+  refreshDisplay();
+  animateDisplay();
+}
+
+function animatePop(el){
+  if(!el)return;
+  el.classList.remove('tokenPop');void el.offsetWidth;el.style.animation='tokenPop .3s ease';
+  setTimeout(()=>el.style.animation='',300);
+}
+function animateDisplay(){
+  const d=document.getElementById('exprDisplay');
+  d.style.animation='none';void d.offsetWidth;
+  d.style.animation='successFlash .4s ease';
+  setTimeout(()=>d.style.animation='',400);
+}
+
+function removeLastToken(){
+  if(!tokens.length)return;
+  const last=tokens[tokens.length-1];
+  if(last.type==='bracket'){
+    if(last.value==='(')openBrackets--;
+    else openBrackets++;
+  }
+  tokens.pop();
+  // Fix bracket button
+  if(openBrackets>0){
+    document.getElementById('btnOpenB').textContent='  )  ';
+    document.getElementById('btnOpenB').classList.add('active-bracket');
+    document.getElementById('btnOpenB').onclick=()=>addBracket(')');
+  } else {
+    document.getElementById('btnOpenB').textContent='( )';
+    document.getElementById('btnOpenB').classList.remove('active-bracket');
+    document.getElementById('btnOpenB').onclick=()=>addBracket('(');
+  }
+  refreshDisplay();
+}
+
 function clearAll(){
-  tokens=[];selectedOp=null;currentSign=1;
+  tokens=[];selectedOp=null;currentSign=1;openBrackets=0;
   document.querySelectorAll('.btn-op').forEach(b=>b.classList.remove('active-op'));
+  document.getElementById('btnOpenB').textContent='( )';
+  document.getElementById('btnOpenB').classList.remove('active-bracket');
+  document.getElementById('btnOpenB').onclick=()=>addBracket('(');
   refreshDisplay();
   document.getElementById('resultArea').innerHTML=`<div class="empty-state"><div class="empty-icon">⅗</div><div class="empty-text">${t('emptyHint')}</div></div>`;
   document.getElementById('methodCount').textContent='';
   lastA=lastB=lastOp=lastResult=null;
 }
 
-// ── CALCULATE ─────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════
+//  CALCULATE  (supports bracket grouping)
+// ═══════════════════════════════════════════════════════
 function calculate(){
+  if(openBrackets>0){showError(t('errBracket'));return;}
+  // Extract all num tokens and op tokens in order (ignore brackets for main display)
   const numToks=tokens.filter(t2=>t2.type==='num');
   const opToks=tokens.filter(t2=>t2.type==='op');
   if(numToks.length<2){showError(t('errTwo'));return;}
-  const a=tokenToFrac(numToks[0]),b=tokenToFrac(numToks[1]);
-  const op=opToks[0]?.value||'+';
-  if(!a||!b){showError(t('errCalc'));return;}
-  if(op==='/'&&b.n===0){showError(t('errDivZero'));return;}
-  let result;
-  switch(op){case '+':result=fracAdd(a,b);break;case '-':result=fracSub(a,b);break;case '*':result=fracMul(a,b);break;case '/':result=fracDiv(a,b);break;}
-  if(!result){showError(t('errCalc'));return;}
-  lastA=a;lastB=b;lastOp=op;lastResult=result;
-  showResults(a,b,op,result);
-  const ra=document.getElementById('resultArea');ra.classList.remove('pulse');void ra.offsetWidth;ra.classList.add('pulse');
-}
-function showError(msg){document.getElementById('resultArea').innerHTML=`<div class="error-box">⚠️ ${msg}</div>`;}
 
-// ── BIG RESULT ────────────────────────────────────────────────────────────────
+  // Evaluate full expression left-to-right respecting brackets
+  const result=evalTokens(tokens);
+  if(result===null){showError(t('errCalc'));return;}
+  if(!isFinite(result.n/result.d)){showError(t('errDivZero'));return;}
+
+  const a=tokenToFrac(numToks[0]);
+  const b=tokenToFrac(numToks[numToks.length-1]);
+  const op=opToks[0]?.value||'+';
+  if(!a||!b)return;
+
+  lastA=a;lastB=b;lastOp=op;lastResult=result;
+
+  // History
+  addToHistory(tokens,result);
+
+  showResults(a,b,op,result);
+  const ra=document.getElementById('resultArea');
+  ra.classList.remove('flash');void ra.offsetWidth;ra.classList.add('flash');
+}
+
+// Simple left-to-right evaluator with bracket support
+function evalTokens(toks){
+  // Flatten brackets: evaluate inner first
+  let flat=[...toks];
+  // Find innermost brackets
+  let maxIter=20;
+  while(maxIter-->0){
+    let closeIdx=flat.findIndex(t=>t.type==='bracket'&&t.value===')');
+    if(closeIdx===-1)break;
+    let openIdx=-1;
+    for(let i=closeIdx-1;i>=0;i--){if(flat[i].type==='bracket'&&flat[i].value==='('){openIdx=i;break;}}
+    if(openIdx===-1)break;
+    const inner=flat.slice(openIdx+1,closeIdx);
+    const innerResult=evalFlat(inner);
+    if(!innerResult)return null;
+    // Replace bracket group with result token
+    const resTok={type:'num',kind:'frac',whole:0,num:innerResult.n,den:innerResult.d,
+      sign:innerResult.n<0?-1:1};
+    if(innerResult.d===1)Object.assign(resTok,{kind:'int',whole:Math.abs(innerResult.n),num:0,den:1});
+    flat.splice(openIdx,closeIdx-openIdx+1,resTok);
+  }
+  return evalFlat(flat);
+}
+
+function evalFlat(toks){
+  // Collect num fracs and ops in order
+  const parts=[];
+  for(const tok of toks){
+    if(tok.type==='num'){const f=tokenToFrac(tok);if(!f)return null;parts.push({type:'num',val:f});}
+    else if(tok.type==='op')parts.push({type:'op',val:tok.value});
+  }
+  if(!parts.length)return null;
+  // Step 1: * and /
+  let i=0;
+  while(i<parts.length){
+    if(parts[i].type==='op'&&(parts[i].val==='*'||parts[i].val==='/')){
+      const left=parts[i-1],right=parts[i+1];
+      if(!left||left.type!=='num'||!right||right.type!=='num')return null;
+      let res;
+      if(parts[i].val==='*')res=fracMul(left.val,right.val);
+      else{if(right.val.n===0)return null;res=fracDiv(left.val,right.val);}
+      if(!res)return null;
+      parts.splice(i-1,3,{type:'num',val:res});
+    } else i++;
+  }
+  // Step 2: + and -
+  let acc=parts[0]?.val;
+  if(!acc)return null;
+  for(let j=1;j<parts.length;j+=2){
+    const op=parts[j],right=parts[j+1];
+    if(!op||op.type!=='op'||!right||right.type!=='num')break;
+    if(op.val==='+')acc=fracAdd(acc,right.val);
+    else acc=fracSub(acc,right.val);
+  }
+  return acc;
+}
+
+function showError(msg){
+  document.getElementById('resultArea').innerHTML=`<div class="error-box">⚠️ ${msg}</div>`;
+}
+
+// ═══════════════════════════════════════════════════════
+//  HISTORY
+// ═══════════════════════════════════════════════════════
+function addToHistory(toks,result){
+  const exprStr=toks.map(tk=>{
+    if(tk.type==='op'){return {'+':'+','-':'-','*':'×','/':'÷'}[tk.value];}
+    if(tk.type==='bracket')return tk.value;
+    return fracToStr(tokenToFrac(tk)||{n:0,d:1});
+  }).join(' ');
+  const now=new Date();
+  const timeStr=`${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+  history.unshift({expr:exprStr,result,time:timeStr,toks:[...toks]});
+  if(history.length>20)history.pop();
+  renderHistory();
+}
+
+function renderHistory(){
+  const list=document.getElementById('historyList');
+  const badge=document.getElementById('histBadge');
+  if(!history.length){
+    list.innerHTML=`<div style="padding:20px;text-align:center;color:var(--text3);font-family:'DM Mono',monospace;font-size:.76rem;">${t('noHistory')}</div>`;
+    badge.style.display='none';return;
+  }
+  badge.textContent=history.length;badge.style.display='';
+  list.innerHTML=history.map((h,i)=>`
+    <div class="history-item" onclick="restoreHistory(${i})" style="animation-delay:${i*.03}s">
+      <div>
+        <div class="history-expr">${h.expr}</div>
+        <div class="history-time">${h.time}</div>
+      </div>
+      <div class="history-res">= ${fracToStr(h.result)}</div>
+    </div>`).join('');
+}
+
+function restoreHistory(i){
+  const h=history[i];
+  tokens=[...h.toks];
+  openBrackets=0;
+  refreshDisplay();
+  lastResult=h.result;
+  const a=tokenToFrac(tokens.filter(t=>t.type==='num')[0]);
+  const b=tokenToFrac(tokens.filter(t=>t.type==='num').pop());
+  const op=tokens.find(t=>t.type==='op')?.value||'+';
+  if(a&&b){lastA=a;lastB=b;lastOp=op;showResults(a,b,op,h.result);}
+}
+
+let histOpen=false;
+function toggleHistory(){
+  histOpen=!histOpen;
+  document.getElementById('historyCard').classList.toggle('open',histOpen);
+  document.getElementById('historyList').style.maxHeight=histOpen?'400px':'0';
+  document.getElementById('histChevron').style.transform=histOpen?'rotate(180deg)':'';
+}
+
+// ═══════════════════════════════════════════════════════
+//  BIG RESULT
+// ═══════════════════════════════════════════════════════
 function renderBigResult(f){
   if(!f)return '';
   const w=Math.trunc(f.n/f.d),r=Math.abs(f.n%f.d),dec=fracToDec(f);
-  let html='<div class="big-result">';
-  if(f.d===1){html+=`<div class="big-whole">${f.n}</div>`;}
+  const pct=(f.n/f.d*100).toFixed(2).replace(/\.?0+$/,'')+'%';
+  const improp=f.d>1?`${f.n}/${f.d}`:'';
+  const mixed=w!==0&&r!==0?`${w} ${r}/${f.d}`:'';
+
+  let main='';
+  if(f.d===1){main=`<div class="big-whole">${f.n}</div>`;}
   else if(w!==0&&r!==0){
-    html+=`<div class="big-whole">${w}</div><div class="big-frac"><div class="big-frac-num">${r}</div><div class="big-frac-line"></div><div class="big-frac-den">${f.d}</div></div>`;
-    html+=`<span class="result-sep">=</span><div class="big-frac"><div class="big-frac-num">${f.n}</div><div class="big-frac-line"></div><div class="big-frac-den">${f.d}</div></div>`;
-  } else {html+=`<div class="big-frac"><div class="big-frac-num">${f.n}</div><div class="big-frac-line"></div><div class="big-frac-den">${f.d}</div></div>`;}
-  html+=`<span class="result-sep" style="font-size:1.1rem">≈</span><div class="result-decimal">${dec}</div></div>`;
-  return html;
+    main=`<div class="big-whole">${w}</div><div class="big-frac"><div class="big-frac-num">${r}</div><div class="big-frac-line"></div><div class="big-frac-den">${f.d}</div></div>`;
+    main+=`<span class="result-sep">=</span><div class="big-frac"><div class="big-frac-num">${f.n}</div><div class="big-frac-line"></div><div class="big-frac-den">${f.d}</div></div>`;
+  } else {
+    main=`<div class="big-frac"><div class="big-frac-num">${f.n}</div><div class="big-frac-line"></div><div class="big-frac-den">${f.d}</div></div>`;
+  }
+
+  let badges=`<span class="badge badge-dec">≈ ${dec}</span><span class="badge badge-pct">${pct}</span>`;
+  if(improp&&!mixed)badges+=`<span class="badge badge-improp">${improp}</span>`;
+  if(mixed)badges+=`<span class="badge badge-mixed">${mixed}</span>`;
+
+  return `<div class="big-result">
+    <div class="big-result-inner">${main}<span class="result-sep" style="font-size:1rem">≈</span><div class="result-decimal">${dec}</div></div>
+    <div class="result-badges" style="width:100%;margin-top:10px;">${badges}</div>
+  </div>`;
 }
 
-// ── HELPERS FOR METHODS ───────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════
+//  INLINE HELPERS
+// ═══════════════════════════════════════════════════════
 function ih(n,d){
-  if(d===1||d===0)return `<span class="highlight">${n}</span>`;
-  return `<span class="inline-frac"><span class="fn highlight">${n}</span><span class="fl"></span><span class="fd highlight">${d}</span></span>`;
+  if(d===1||d===0)return `<span class="hi">${n}</span>`;
+  return `<span class="inline-frac"><span class="fn hi">${n}</span><span class="fl"></span><span class="fd hi">${d}</span></span>`;
 }
 function opN(op){return {'+':t('opAdd'),'-':t('opSub'),'*':t('opMul'),'/':t('opDiv')}[op];}
 function opS(op){return {'+':'＋','-':'－','*':'×','/':'÷'}[op];}
-function drawBar(f){
-  const pct=Math.min(Math.max((f.n/f.d)*100,0),100);
-  return `<div style="display:inline-block;width:110px;height:11px;background:var(--surface3);border-radius:3px;border:1px solid var(--border);overflow:hidden;vertical-align:middle;margin-left:7px;"><div style="width:${pct}%;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px;"></div></div>`;
-}
 function primes(n){n=Math.abs(n);if(n<=1)return '1';const f=[];for(let i=2;i<=n;i++)while(n%i===0){f.push(i);n/=i;}return f.join('×');}
-function euclidSteps(a,b){const st=[];let x=Math.abs(a),y=Math.abs(b);while(y){st.push(`${x}=${Math.floor(x/y)}×${y}+${x%y}`);[x,y]=[y,x%y];}return st;}
+function euclidSt(a,b){const st=[];let x=Math.abs(a),y=Math.abs(b);while(y){st.push(`${x}=${Math.floor(x/y)}×${y}+${x%y}`);[x,y]=[y,x%y];}return st;}
+function drawBar(f){
+  const pct=Math.min(Math.max((f.n/f.d)*100,0),150);
+  const cl=pct>100?'var(--err)':pct>50?'var(--accent2)':'var(--accent)';
+  return `<div style="display:inline-block;width:110px;height:11px;background:var(--surface3);border-radius:3px;border:1px solid var(--border);overflow:hidden;vertical-align:middle;margin-left:7px;">
+    <div style="width:${Math.min(pct,100)}%;height:100%;background:linear-gradient(90deg,${cl},var(--accent2));border-radius:3px;transition:width .6s cubic-bezier(.2,1,.3,1);"></div>
+  </div>`;
+}
 
-// ── METHODS ───────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════
+//  METHODS
+// ═══════════════════════════════════════════════════════
 function getMethods(a,b,op,result){
   const M=[];
 
@@ -652,38 +1154,38 @@ function getMethods(a,b,op,result){
     const ow=opS(op);
     if(a.d===b.d){
       M.push({name:t('mStdSame'),steps:[
-        `${t('sEqDen')}: <span class="highlight">${a.d}</span> — ${t('sAddDir')}.`,
+        `${t('sEqDen')}: <span class="hi">${a.d}</span> — ${t('sAddDir')}.`,
         `<span class="formula">${ih(a.n,1)} ${ow} ${ih(b.n,1)} = ${ih(a.n+(op==='+'?b.n:-b.n),1)}</span>`,
-        `${t('sDenStays')}: <span class="highlight">${result.d}</span>`,
+        `${t('sDenStays')}: <span class="hi">${result.d}</span>`,
         `${t('sResult')}: <span class="formula">${ih(result.n,result.d)}</span>`
       ]});
     } else {
       const L=lcm(a.d,b.d),ma=L/a.d,mb=L/b.d,na=a.n*ma,nb=b.n*mb;
       M.push({name:t('mStd'),steps:[
-        `${t('sFindLcm')}(${a.d},${b.d}) = <span class="highlight">${L}</span>`,
+        `${t('sFindLcm')}(${a.d},${b.d}) = <span class="hi">${L}</span>`,
         `${t('sBring')}: ${ih(a.n,a.d)} → ${ih(na,L)} (×${ma}),  ${ih(b.n,b.d)} → ${ih(nb,L)} (×${mb})`,
         `<span class="formula">${ih(na,1)} ${ow} ${ih(nb,1)} = ${ih(na+(op==='+'?nb:-nb),1)}</span>`,
         `${t('sResult')}: <span class="formula">${ih(result.n,result.d)}</span>`
       ]});
     }
   }
-  if(op==='*'){M.push({name:t('mMul'),steps:[
-    `${t('sMulN')}: <span class="highlight">${a.n} × ${b.n} = ${a.n*b.n}</span>`,
-    `${t('sMulD')}: <span class="highlight">${a.d} × ${b.d} = ${a.d*b.d}</span>`,
+  if(op==='*')M.push({name:t('mMul'),steps:[
+    `${t('sMulN')}: <span class="hi">${a.n} × ${b.n} = ${a.n*b.n}</span>`,
+    `${t('sMulD')}: <span class="hi">${a.d} × ${b.d} = ${a.d*b.d}</span>`,
     `${t('sGet')}: <span class="formula">${ih(a.n*b.n,a.d*b.d)}</span>`,
     `${t('sSimpl')} ${gcd(Math.abs(a.n*b.n),a.d*b.d)}): <span class="formula">${ih(result.n,result.d)}</span>`
-  ]});}
-  if(op==='/'){M.push({name:t('mDiv'),steps:[
+  ]});
+  if(op==='/')M.push({name:t('mDiv'),steps:[
     `${t('sFlip')}: ${ih(b.n,b.d)} → ${ih(b.d,b.n)}`,
-    `${t('sMulInstead')}: ${ih(a.n,a.d)} × ${ih(b.d,b.n)}`,
-    `${t('sNums')}: <span class="highlight">${a.n}×${b.d}=${a.n*b.d}</span>`,
-    `${t('sDens')}: <span class="highlight">${a.d}×${b.n}=${a.d*b.n}</span>`,
+    `${t('sMulInst')}: ${ih(a.n,a.d)} × ${ih(b.d,b.n)}`,
+    `${t('sNums')}: <span class="hi">${a.n}×${b.d}=${a.n*b.d}</span>`,
+    `${t('sDens')}: <span class="hi">${a.d}×${b.n}=${a.d*b.n}</span>`,
     `${t('sReduce')}: <span class="formula">${ih(result.n,result.d)}</span>`
-  ]});}
+  ]});
 
   // 2 — Mixed
   M.push({name:t('mMixed'),steps:[
-    `${t('sConvMix')}: <span class="highlight">${fracToStr(a)}</span>, <span class="highlight">${fracToStr(b)}</span>`,
+    `${t('sConvMix')}: <span class="hi">${fracToStr(a)}</span>, <span class="hi">${fracToStr(b)}</span>`,
     op==='+'||op==='-'?t('sWorkSep'):`${t('sBackImpr')} ${opN(op)}.`,
     `${t('sTotal')}: <span class="formula">${fracToStr(result)}</span> = <span class="formula">${ih(result.n,result.d)}</span>`
   ]});
@@ -694,7 +1196,7 @@ function getMethods(a,b,op,result){
     M.push({name:t('mGcdLcm'),steps:[
       `${t('sGcd')}(${Math.abs(a.n)},${a.d})=${g1} → ${ih(a.n/g1,a.d/g1)}`,
       `${t('sGcd')}(${Math.abs(b.n)},${b.d})=${g2} → ${ih(b.n/g2,b.d/g2)}`,
-      `${t('sLcm')}(${a.d},${b.d})=<span class="highlight">${L}</span>`,
+      `${t('sLcm')}(${a.d},${b.d})=<span class="hi">${L}</span>`,
       `${t('sResult')}: <span class="formula">${ih(result.n,result.d)}</span>`
     ]});
   }
@@ -703,30 +1205,30 @@ function getMethods(a,b,op,result){
   if(op==='+'||op==='-'){
     const da=(a.n/a.d).toFixed(4),db=(b.n/b.d).toFixed(4),dr=(result.n/result.d).toFixed(4);
     M.push({name:t('mNumLine'),steps:[
-      `${t('sToDec')}: <span class="highlight">${fracToStr(a)} ≈ ${da}</span>`,
-      `${t('sToDec')}: <span class="highlight">${fracToStr(b)} ≈ ${db}</span>`,
-      `${da} ${opS(op)} ${db} ≈ <span class="highlight">${dr}</span>`,
+      `${t('sToDec')}: <span class="hi">${fracToStr(a)} ≈ ${da}</span>`,
+      `${t('sToDec')}: <span class="hi">${fracToStr(b)} ≈ ${db}</span>`,
+      `${da} ${opS(op)} ${db} ≈ <span class="hi">${dr}</span>`,
       `${t('sToFrac')}: <span class="formula">${ih(result.n,result.d)}</span>`
     ]});
   }
 
-  // 5 — Cross multiplication
+  // 5 — Cross
   if(op==='+'||op==='-'){
     const top=op==='+'?a.n*b.d+b.n*a.d:a.n*b.d-b.n*a.d,bot=a.d*b.d,g=gcd(Math.abs(top),bot);
     M.push({name:t('mCross'),steps:[
-      `${t('sCrossN')}: (${a.n}×${b.d}) ${op} (${b.n}×${a.d})`,
-      `= <span class="highlight">${a.n*b.d} ${op} ${b.n*a.d} = ${top}</span>`,
-      `${t('sCrossD')}: <span class="highlight">${a.d}×${b.d}=${bot}</span>`,
+      `${t('sCrossN')}: (${a.n}×${b.d}) ${opS(op)} (${b.n}×${a.d})`,
+      `= <span class="hi">${a.n*b.d} ${opS(op)} ${b.n*a.d} = ${top}</span>`,
+      `${t('sCrossD')}: <span class="hi">${a.d}×${b.d}=${bot}</span>`,
       `${t('sBefore')}: <span class="formula">${ih(top,bot)}</span>`,
-      `${t('sGcd')}(${Math.abs(top)},${bot})=${g} → <span class="formula">${ih(result.n,result.d)}</span>`
+      `${t('sGcd')}=${g} → <span class="formula">${ih(result.n,result.d)}</span>`
     ]});
   }
 
-  // 6 — Prime factors
+  // 6 — Primes
   if(op==='*'||op==='/'){
     M.push({name:t('mPrime'),steps:[
-      `${a.n}: <span class="highlight">${primes(a.n)}</span>,  ${a.d}: <span class="highlight">${primes(a.d)}</span>`,
-      `${b.n}: <span class="highlight">${primes(b.n)}</span>,  ${b.d}: <span class="highlight">${primes(b.d)}</span>`,
+      `${a.n}: <span class="hi">${primes(a.n)}</span>,  ${a.d}: <span class="hi">${primes(a.d)}</span>`,
+      `${b.n}: <span class="hi">${primes(b.n)}</span>,  ${b.d}: <span class="hi">${primes(b.d)}</span>`,
       op==='*'?`<span class="formula">${ih(a.n*b.n,a.d*b.d)}</span>`:`<span class="formula">${ih(a.n*b.d,a.d*b.n)}</span>`,
       `${t('sCommon')}: <span class="formula">${ih(result.n,result.d)}</span>`
     ]});
@@ -734,7 +1236,7 @@ function getMethods(a,b,op,result){
 
   // 7 — Euclid
   {
-    const L=lcm(a.d,b.d),es=euclidSteps(a.d,b.d).slice(0,3);
+    const L=lcm(a.d,b.d),es=euclidSt(a.d,b.d).slice(0,3);
     M.push({name:t('mEuclid'),steps:[
       `${t('sEuclid')} (${a.d},${b.d}):`,
       ...es.map(s=>`<span class="formula">${s}</span>`),
@@ -743,7 +1245,7 @@ function getMethods(a,b,op,result){
     ]});
   }
 
-  // 8 — Direct formula (BEST)
+  // 8 — Direct (BEST)
   {
     const fm={
       '+': `${ih(a.n,a.d)} ＋ ${ih(b.n,b.d)} = ${ih(a.n*b.d+b.n*a.d,a.d*b.d)} = ${ih(result.n,result.d)}`,
@@ -754,15 +1256,15 @@ function getMethods(a,b,op,result){
     M.push({name:t('mDirect'),best:true,steps:[
       `${t('sApply')} ${opN(op)}:`,
       `<span class="formula">${fm[op]}</span>`,
-      `${t('sFinalAns')}: <span class="highlight">${fracToStr(result)}</span>`
+      `${t('sFinalAns')}: <span class="hi">${fracToStr(result)}</span>`
     ]});
   }
 
   // 9 — Visual
   M.push({name:t('mVisual'),steps:[
-    `${t('sN1')}: <span class="highlight">${fracToStr(a)}</span> ≈ <span class="highlight">${(a.n/a.d*100).toFixed(1)}%</span> ${drawBar(a)}`,
-    `${t('sN2')}: <span class="highlight">${fracToStr(b)}</span> ≈ <span class="highlight">${(b.n/b.d*100).toFixed(1)}%</span> ${drawBar(b)}`,
-    `${t('sResOf')} ${opN(op)}: <span class="highlight">${fracToStr(result)}</span> ≈ <span class="highlight">${(result.n/result.d*100).toFixed(1)}%</span> ${drawBar(result)}`
+    `${t('sN1')}: <span class="hi">${fracToStr(a)}</span> ≈ <span class="hi">${(a.n/a.d*100).toFixed(1)}%</span> ${drawBar(a)}`,
+    `${t('sN2')}: <span class="hi">${fracToStr(b)}</span> ≈ <span class="hi">${(b.n/b.d*100).toFixed(1)}%</span> ${drawBar(b)}`,
+    `${t('sResOf')} ${opN(op)}: <span class="hi">${fracToStr(result)}</span> ≈ <span class="hi">${(result.n/result.d*100).toFixed(1)}%</span> ${drawBar(result)}`
   ]});
 
   // 10 — Verify
@@ -773,10 +1275,10 @@ function getMethods(a,b,op,result){
     const rs={'+':'＋','-':'－','*':'×','/':'÷'}[rop];
     M.push({name:t('mVerify'),steps:[
       `${t('sWasRes')}: <span class="formula">${ih(result.n,result.d)}</span>`,
-      `${t('sApplyRev')} (${rs}): <span class="highlight">${fracToStr(b)}</span>`,
+      `${t('sApplyRev')} (${rs}): <span class="hi">${fracToStr(b)}</span>`,
       check?`<span class="formula">${ih(result.n,result.d)} ${rs} ${ih(b.n,b.d)} = ${ih(check.n,check.d)}</span>`:`<em>${t('sImposs')}</em>`,
       check&&check.n===a.n&&check.d===a.d
-        ?`${t('sMatchInit')} <span class="highlight">${fracToStr(a)}</span> — <span class="highlight" style="color:var(--success)">${t('sCorrect')}</span>`
+        ?`${t('sMatchInit')} <span class="hi">${fracToStr(a)}</span> — <span class="hi" style="color:var(--success)">${t('sCorrect')}</span>`
         :`${t('sCheckRes')}: <span class="formula">${check?ih(check.n,check.d):'—'}</span>`
     ]});
   }
@@ -784,7 +1286,9 @@ function getMethods(a,b,op,result){
   return M.slice(0,10);
 }
 
-// ── SHOW RESULTS ──────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════
+//  SHOW RESULTS
+// ═══════════════════════════════════════════════════════
 function showResults(a,b,op,result){
   const methods=getMethods(a,b,op,result);
   document.getElementById('methodCount').textContent=`${methods.length} ${t('of')} 10 ${t('methodsOf')}`;
@@ -797,22 +1301,37 @@ function showResults(a,b,op,result){
         ${m.best?`<span class="tag tag-best">${t('best')}</span>`:''}
         <span class="chevron">▼</span>
       </div>
-      <div class="method-body"><div class="step-list">
+      <div class="method-body"><div class="method-body-inner"><div class="step-list">
         ${m.steps.map((s,si)=>`<div class="step"><div class="step-num">${si+1}</div><div class="step-content">${s}</div></div>`).join('')}
-      </div></div>
+      </div></div></div>
     </div>`;
   });
   document.getElementById('resultArea').innerHTML=html+'</div>';
 }
-function toggleMethod(i){document.getElementById('mc'+i).classList.toggle('open');}
 
-// ── KEYBOARD ──────────────────────────────────────────────────────────────────
+function toggleMethod(i){
+  const c=document.getElementById('mc'+i);c.classList.toggle('open');
+}
+
+// ═══════════════════════════════════════════════════════
+//  KEYBOARD
+// ═══════════════════════════════════════════════════════
 document.addEventListener('keydown',e=>{
   if(e.key==='Enter'&&!e.shiftKey){
-    if(document.activeElement&&document.activeElement.classList.contains('entry-field'))addFromTab();
+    if(document.activeElement?.classList.contains('entry-field'))addFromTab();
     else calculate();
   }
+  if(e.key==='Escape')clearAll();
+  if(e.key==='Backspace'&&!document.activeElement?.classList.contains('entry-field'))removeLastToken();
+  if(e.key==='(')addBracket('(');
+  if(e.key===')')addBracket(')');
 });
+
+// ═══════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════
+refreshDisplay();
+renderHistory();
 </script>
 
 </body>
