@@ -1,0 +1,11 @@
+{
+  "module_id": "default_dashboard",
+  "title": "Стартовая панель",
+  "author": "Launcher Team",
+  "entrypoint": "launcher.modules.default_dashboard.script:boot",
+  "style": {
+    "background": "#1f2937",
+    "foreground": "#e5e7eb"
+  },
+  "description": "Базовый модуль с системной статистикой и кнопками быстрого запуска."
+}
