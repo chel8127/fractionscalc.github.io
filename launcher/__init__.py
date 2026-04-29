@@ -1,0 +1,1 @@
+"""Modular Minecraft launcher prototype."""
